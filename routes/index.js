@@ -45,10 +45,11 @@ const checkIfNewRelease = (prev, curr) => {
     if (prev.length === 0){
       // Email author about server restart
       console.log("The server seems to have restarted")
-      mailUtils.sendEmail();
+      mailUtils.sendEmail("admin");
     } else {
       // Email users about general update
       console.log("NEW RELEASE!")
+      mailUtils.sendEmail("subscriber")
     }
     console.log("New release!")
     savedAppartments = curr;
@@ -71,7 +72,7 @@ const timedUpdate = () => {
     setTimeout(() => {
       console.log("Refreshing...")
       timedUpdate();
-    }, 1000 * 5);
+    }, 1000 * 60 * 5);
   }).catch(err => console.error("Error in timedUpdate", err))
 }
 
@@ -85,7 +86,6 @@ const asyncMiddleware = fn =>
 
 /* GET home page. */
 router.get('/', asyncMiddleware(async (req, res, next) => {
-  timedUpdate();
   const ap = await updateApartments()
   res.send(ap);
 }));
