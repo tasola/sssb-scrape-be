@@ -5,7 +5,7 @@ const url = 'https://www.sssb.se/soka-bostad/sok-ledigt/lediga-bostader/?paginat
 const puppeteer = require('puppeteer');
 const mailUtils = require("./../utils/mail.js");
 
-let savedAppartments = [];
+let savedApartments = [];
 
 const logger = (req, res, next) => {
   console.log("HEJ")
@@ -42,6 +42,10 @@ const arraysAreEqual = (prev, curr) => {
 
 const checkIfNewRelease = (prev, curr) => {
   if (!arraysAreEqual(prev, curr)){
+    if (isNyponet(curr)) {
+      console.log("Nyponet!")
+      mailUtils.sendEmail("nypon");
+    }
     if (prev.length === 0){
       // Email author about server restart
       console.log("The server seems to have restarted")
@@ -52,16 +56,26 @@ const checkIfNewRelease = (prev, curr) => {
       mailUtils.sendEmail("subscriber")
     }
     console.log("New release!")
-    savedAppartments = curr;
+    savedApartments = curr;
   }
 }
 
+const isNyponet = (arr) => {
+  console.log(arr[1])
+  console.log(arr[1].startsWith("Körsbärsvägen 9"))
+  let containsNyponet = false;
+  arr.forEach((ap) => {
+    if (ap.startsWith("Körsbärsvägen 9")) containsNyponet = true;
+  })
+  return containsNyponet;
+}
+
 const updateApartments = () => {
-  const result = scrapeApartments().then((appartments) => {
+  const result = scrapeApartments().then((apartments) => {
     console.log("kört scrapeApartments och får: ")
-    console.log(appartments)
-    checkIfNewRelease(savedAppartments, appartments);
-    return appartments;
+    console.log(apartments)
+    checkIfNewRelease(savedApartments, apartments);
+    return apartments;
   });
   return result;
 }

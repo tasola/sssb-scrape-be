@@ -28,6 +28,13 @@ let subscriberOptions = {
   text: "Det har släppts nya läggor din sjuke fan"
 }
 
+let nyponOptions = {
+  form: 'pollisti123@gmail.com',
+  to: "petter.tk@hotmail.com",
+  subject: "NYPONET UTE",
+  text: "Nyponet har släppts!"
+}
+
 const send = (type) => {
   transporter.sendMail(type, (error, info) => {
     if (error) return console.log(error)
@@ -43,6 +50,9 @@ const decideEmail = (role) => {
       break;
     case "subscriber":
       send(subscriberOptions)
+      break;
+    case "nypon":
+      send(nyponOptions)
       break;
     default:
       send(adminOptions);
