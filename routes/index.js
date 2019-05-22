@@ -3,9 +3,9 @@ const router = express.Router();
 
 const url = 'https://www.sssb.se/soka-bostad/sok-ledigt/lediga-bostader/?paginationantal=50';
 const puppeteer = require('puppeteer');
+const mailUtils = require("./../utils/mail.js");
 
-let test = [];
-
+let savedAppartments = [];
 
 const logger = (req, res, next) => {
   console.log("HEJ")
@@ -13,23 +13,6 @@ const logger = (req, res, next) => {
 }
 
 router.use(logger);
-
-// const b = async () => {
-//   puppeteer.launch().then(async browser => {
-//     const page = await browser.newPage();
-//     await page.goto(url);
-//     //await page.waitFor(1000);
-//     const apartments = await page.evaluate(() => {
-//       let data = [];
-//       const text = document.querySelectorAll('.ObjektAdress');
-//       for (let i = 0; i < text.length; i++){
-//         data.push(text[i].childNodes[0].text)
-//       }
-//       return data;
-//     })
-//     console.info(apartments)
-//   })
-// }
 
 const scrapeApartments = async () => {
   const browser = await puppeteer.launch();
@@ -50,14 +33,36 @@ const scrapeApartments = async () => {
   return result;
 }
 
-const updateApartments = () => {
-  const scraped = scrapeApartments().then((value) => {
-    console.log("kört scrapeApartments och får: ")
-    console.log(value)
-    test = value;
-    return value;
+const arraysAreEqual = (prev, curr) => {
+  return prev.length === curr.length
+  && prev.sort().every((value, index) => {
+    return value === curr.sort()[index]
   });
-  return scraped;
+}
+
+const checkIfNewRelease = (prev, curr) => {
+  if (!arraysAreEqual(prev, curr)){
+    if (prev.length === 0){
+      // Email author about server restart
+      console.log("The server seems to have restarted")
+      mailUtils.sendEmail();
+    } else {
+      // Email users about general update
+      console.log("NEW RELEASE!")
+    }
+    console.log("New release!")
+    savedAppartments = curr;
+  }
+}
+
+const updateApartments = () => {
+  const result = scrapeApartments().then((appartments) => {
+    console.log("kört scrapeApartments och får: ")
+    console.log(appartments)
+    checkIfNewRelease(savedAppartments, appartments);
+    return appartments;
+  });
+  return result;
 }
 
 const timedUpdate = () => {
@@ -72,11 +77,17 @@ const timedUpdate = () => {
 
 timedUpdate();
 
-//updateApartments();
+const asyncMiddleware = fn =>
+  (req, res, next) => {
+    Promise.resolve(fn(req, res, next))
+      .catch(next);
+  };
 
 /* GET home page. */
-router.get('/', (req, res, next) => {
-  res.send(test);
-});
+router.get('/', asyncMiddleware(async (req, res, next) => {
+  timedUpdate();
+  const ap = await updateApartments()
+  res.send(ap);
+}));
 
 module.exports = router;
