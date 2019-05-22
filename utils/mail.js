@@ -1,7 +1,5 @@
-const fs = require("fs")
-const config = JSON.parse(fs.readFileSync("config.json"))
-
 const nodemailer = require("nodemailer");
+require('dotenv').config()
 
 let transporter = nodemailer.createTransport({
   service: "gmail",
@@ -9,7 +7,7 @@ let transporter = nodemailer.createTransport({
   port: 25,
   auth: {
     user: "pollisti123@gmail.com",
-    pass: config.gmail,
+    pass: process.env.GMAIL,
   },
   tls: {
     rejectUnauthorized: true
