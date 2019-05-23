@@ -5,6 +5,12 @@ const url = 'https://www.sssb.se/soka-bostad/sok-ledigt/lediga-bostader/?paginat
 const puppeteer = require('puppeteer');
 const mailUtils = require("./../utils/mail.js");
 
+// Keep Heroku awake
+const http = require("http");
+setInterval(() => {
+    http.get("http://sssb-scrape.herokuapp.com");
+}, 300000);
+
 let savedApartments = [];
 
 const logger = (req, res, next) => {
@@ -42,9 +48,12 @@ const arraysAreEqual = (prev, curr) => {
 
 const checkIfNewRelease = (prev, curr) => {
   if (!arraysAreEqual(prev, curr)){
-    if (isNyponet(curr)) {
+    const apartmentsOfInterest = checkApartmentsOfInterest(curr);
+    const isOfInterest = apartmentsOfInterest.length > 0;
+    if (isOfInterest) {
       console.log("Nyponet!")
-      mailUtils.sendEmail("nypon");
+      console.log(apartmentsOfInterest)
+      mailUtils.sendEmail("nypon", apartmentsOfInterest);
     }
     if (prev.length === 0){
       // Email author about server restart
@@ -60,14 +69,14 @@ const checkIfNewRelease = (prev, curr) => {
   }
 }
 
-const isNyponet = (arr) => {
-  console.log(arr[1])
-  console.log(arr[1].startsWith("Körsbärsvägen 9"))
-  let containsNyponet = false;
+const checkApartmentsOfInterest = (arr) => {
+  let apartmentNumbers = [];
   arr.forEach((ap) => {
-    if (ap.startsWith("Körsbärsvägen 9")) containsNyponet = true;
+    if (ap.startsWith("Körsbärsvägen 9")){
+      apartmentNumbers.push(ap.slice(-4))
+    }
   })
-  return containsNyponet;
+  return apartmentNumbers;
 }
 
 const updateApartments = () => {

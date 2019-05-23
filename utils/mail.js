@@ -32,7 +32,7 @@ let nyponOptions = {
   form: 'pollisti123@gmail.com',
   to: "petter.tk@hotmail.com",
   subject: "NYPONET UTE",
-  text: "Nyponet har släppts!"
+  text: "Nyponet har släppts! Lägenhetsnummer: "
 }
 
 const send = (type) => {
@@ -40,10 +40,16 @@ const send = (type) => {
     if (error) return console.log(error)
     else console.log("The message was sent")
     console.log(info)
+    nyponOptions.text = "Nyponet har släppts! Lägenhetsnummer: "
   });
 }
 
-const decideEmail = (role) => {
+const decideEmail = (role, apartments) => {
+  if (apartments){
+    apartments.forEach((ap) => {
+      nyponOptions.text += ap + " ";
+    })
+  }
   switch(role){
     case "admin":
       send(adminOptions);
@@ -60,7 +66,7 @@ const decideEmail = (role) => {
 }
 
 module.exports = {
-  sendEmail: (role) => {
-    decideEmail(role);
+  sendEmail: (role, apartments) => {
+    decideEmail(role, apartments);
   }
 }
