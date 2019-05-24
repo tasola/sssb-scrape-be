@@ -46,19 +46,27 @@ const arraysAreEqual = (prev, curr) => {
   });
 }
 
+const interestCheck = (arr) => {
+  const apartmentsOfInterest = checkApartmentsOfInterest(arr);
+  const isOfInterest = apartmentsOfInterest.length > 0;
+  if (isOfInterest) {
+    console.log("Nyponet!")
+    console.log(apartmentsOfInterest)
+    mailUtils.sendEmail("nypon", apartmentsOfInterest);
+  }
+}
+
 const checkIfNewRelease = (prev, curr) => {
   if (!arraysAreEqual(prev, curr)){
-    const apartmentsOfInterest = checkApartmentsOfInterest(curr);
-    const isOfInterest = apartmentsOfInterest.length > 0;
-    if (isOfInterest) {
-      console.log("Nyponet!")
-      console.log(apartmentsOfInterest)
-      mailUtils.sendEmail("nypon", apartmentsOfInterest);
-    }
+    interestCheck(curr);
     if (prev.length === 0){
       // Email author about server restart
       console.log("The server seems to have restarted")
       mailUtils.sendEmail("admin");
+    } else if (curr.length === 0) {
+      // If the results show 0 apartments, retry one time.
+      updateApartments();
+      return;
     } else {
       // Email users about general update
       console.log("NEW RELEASE!")
@@ -101,6 +109,7 @@ const timedUpdate = () => {
 
 timedUpdate();
 
+// Middleware for async route
 const asyncMiddleware = fn =>
   (req, res, next) => {
     Promise.resolve(fn(req, res, next))

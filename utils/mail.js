@@ -2,34 +2,34 @@ const nodemailer = require("nodemailer");
 require('dotenv').config()
 
 let transporter = nodemailer.createTransport({
-  service: "gmail",
-  secure: true,
-  port: 25,
+  service: "hotmail",
+  secureConnection: false,
+  port: 465,
   auth: {
-    user: "pollisti123@gmail.com",
-    pass: process.env.GMAIL,
+    user: "pollisti@hotmail.com",
+    pass: process.env.HOTMAIL,
   },
   tls: {
-    rejectUnauthorized: true
+    ciphers:'SSLv3'
   }
 });
 
 let adminOptions = {
-  form: 'pollisti123@gmail.com',
+  from: 'pollisti@hotmail.com',
   to: "petter.tk@hotmail.com",
   subject: "Server Information",
   text: "Lägenhetslistan är tom. Förmodligen är servern nystartad, annars kan det vara värt att kolla upp."
 }
 
 let subscriberOptions = {
-  form: 'pollisti123@gmail.com',
+  from: 'pollisti@hotmail.com',
   to: "petter.tk@hotmail.com",
   subject: "SSSB subscription",
   text: "Det har släppts nya läggor din sjuke fan"
 }
 
 let nyponOptions = {
-  form: 'pollisti123@gmail.com',
+  from: 'pollisti@hotmail.com',
   to: "petter.tk@hotmail.com",
   subject: "NYPONET UTE",
   text: "Nyponet har släppts! Lägenhetsnummer: "
