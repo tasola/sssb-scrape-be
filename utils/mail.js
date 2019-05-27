@@ -15,33 +15,33 @@ let transporter = nodemailer.createTransport({
 });
 
 let adminOptions = {
-  from: 'pollisti@hotmail.com',
+  from: 'SSSB Info <pollisti@hotmail.com>',
   to: "petter.tk@hotmail.com",
   subject: "Server Information",
   text: "Lägenhetslistan är tom. Förmodligen är servern nystartad, annars kan det vara värt att kolla upp."
 }
 
 let subscriberOptions = {
-  from: 'pollisti@hotmail.com',
+  from: 'SSSB Info <pollisti@hotmail.com>',
   to: "petter.tk@hotmail.com",
   subject: "SSSB subscription",
   text: "Det har släppts nya läggor din sjuke fan"
 }
 
 let nyponOptions = {
-  from: 'pollisti@hotmail.com',
+  from: 'SSSB Info <pollisti@hotmail.com>',
   to: "petter.tk@hotmail.com",
   subject: "NYPONET UTE",
   text: "Nyponet har släppts! Lägenhetsnummer: "
 }
 
 const send = (type) => {
-  transporter.sendMail(type, (error, info) => {
-    if (error) return console.log(error)
-    else console.log("The message was sent")
-    console.log(info)
-    nyponOptions.text = "Nyponet har släppts! Lägenhetsnummer: "
-  });
+  // transporter.sendMail(type, (error, info) => {
+  //   if (error) return console.log(error)
+  //   else console.log("The message was sent")
+  //   console.log(info)
+  //   nyponOptions.text = "Nyponet har släppts! Lägenhetsnummer: "
+  // });
 }
 
 const decideEmail = (role, apartments) => {

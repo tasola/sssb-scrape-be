@@ -12,28 +12,33 @@ setInterval(() => {
 }, 300000);
 
 let savedApartments = [];
-
-const logger = (req, res, next) => {
-  console.log("HEJ")
-  next();
-}
-
-router.use(logger);
+let areasOfInterest = ["Körsbärsvägen 9"]
+let apartmentNosOfInterest = ["03", "02"]
 
 const scrapeApartments = async () => {
   const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
   const page = await browser.newPage();
 
-  await page.goto(url);
+  await page.goto(url, {waitUntil: 'networkidle2'});
   await page.waitFor(1000);
 
   const result = await page.evaluate(() => {
     let data = [];
-      const text = document.querySelectorAll('.ObjektAdress');
-      for (let i = 0; i < text.length; i++){
-        data.push(text[i].childNodes[0].text)
+      const primaryData = document.querySelectorAll('.ObjektAdress');
+      const metaData = document.querySelectorAll(".ObjektDetaljer > dl > dd")
+      for (let i = 0; i < primaryData.length; i++){
+        data.push({
+          adress: primaryData[i].childNodes[0].text,
+          id: metaData[0 + i * 7].innerHTML,
+          area: metaData[1 + i * 7].innerHTML,
+          floor: metaData[2 + i * 7].innerHTML,
+          sqareMeters: metaData[3 + i * 7].innerHTML,
+          rent: metaData[4 + i * 7].innerHTML,
+          moveIn: metaData[5 + i * 7].innerHTML,
+          queue: metaData[6 + i * 7].innerHTML,
+        })
       }
-      return data;
+      return data
   })
   browser.close();
   return result;
@@ -80,8 +85,8 @@ const checkIfNewRelease = (prev, curr) => {
 const checkApartmentsOfInterest = (arr) => {
   let apartmentNumbers = [];
   arr.forEach((ap) => {
-    if (ap.startsWith("Körsbärsvägen 9")){
-      apartmentNumbers.push(ap.slice(-4))
+    if (ap.adress.startsWith("Körsbärsvägen 9")){
+      apartmentNumbers.push(ap.adress.slice(-4))
     }
   })
   return apartmentNumbers;
