@@ -26,20 +26,22 @@ const scrapeApartments = async () => {
     let data = [];
       const primaryData = document.querySelectorAll('.ObjektAdress');
       const metaData = document.querySelectorAll(".ObjektDetaljer > dl > dd")
+      const areaData = document.querySelectorAll(".ObjektDetaljer > dl > dd > a")
       for (let i = 0; i < primaryData.length; i++){
-        data.push({
-          adress: primaryData[i].childNodes[0].text,
-          id: metaData[0 + i * 7].innerHTML,
-          area: metaData[1 + i * 7].innerHTML,
-          floor: metaData[2 + i * 7].innerHTML,
-          sqareMeters: metaData[3 + i * 7].innerHTML,
-          rent: metaData[4 + i * 7].innerHTML,
-          moveIn: metaData[5 + i * 7].innerHTML,
-          queue: metaData[6 + i * 7].innerHTML,
-        })
+         data.push({
+           adress: primaryData[i].childNodes[0].text,
+           id: metaData[0 + i * 6].innerHTML,
+           area: areaData[i].innerHTML,
+           floor: metaData[0 + i * 6].innerHTML.substring(7,9),
+           sqareMeters: metaData[2 + i * 6].innerHTML,
+           rent: metaData[3 + i * 6].innerHTML.replace(/&nbsp;/gi, ''),
+           moveIn: metaData[4 + i * 6].innerHTML,
+           queue: metaData[5 + i * 6].innerHTML,
+         })
       }
       return data
   })
+  console.log(result)
   browser.close();
   return result;
 }
@@ -78,6 +80,7 @@ const checkIfNewRelease = (prev, curr) => {
       mailUtils.sendEmail("subscriber")
     }
     console.log("New release!")
+    console.log(curr)
     savedApartments = curr;
   }
 }
