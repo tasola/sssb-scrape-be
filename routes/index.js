@@ -20,7 +20,7 @@ const scrapeApartments = async () => {
   const page = await browser.newPage();
 
   await page.goto(url, {waitUntil: 'networkidle2'});
-  await page.waitFor(1000);
+  await page.waitFor(10000);
 
   const result = await page.evaluate(() => {
     let data = [];
@@ -41,46 +41,65 @@ const scrapeApartments = async () => {
       }
       return data
   })
-  console.log(result)
+  //console.log(result)
   browser.close();
   return result;
 }
 
-const arraysAreEqual = (prev, curr) => {
-  return prev.length === curr.length
-  && prev.sort().every((value, index) => {
-    return value === curr.sort()[index]
-  });
+const arraysOfObjectsAreSame = (prev, curr) => {
+  if (prev.length !== curr.length) return false;
+  for (let i = 0; i < prev.length; i++){
+    if (!objectsAreSame(prev[i], curr[i])){
+      return false;
+    }
+  }
+  return true;
+}
+
+const objectsAreSame = (x, y) => {
+  var objectsAreSame = true;
+  for(var propertyName in x) {
+     if(x[propertyName] !== y[propertyName]) {
+        objectsAreSame = false;
+        break;
+     }
+  }
+  return objectsAreSame;
 }
 
 const interestCheck = (arr) => {
   const apartmentsOfInterest = checkApartmentsOfInterest(arr);
   const isOfInterest = apartmentsOfInterest.length > 0;
   if (isOfInterest) {
-    console.log("Nyponet!")
-    console.log(apartmentsOfInterest)
+    console.log("MAILAR OM NYTT NYPON!")
+    //console.log(apartmentsOfInterest)
     mailUtils.sendEmail("nypon", apartmentsOfInterest);
   }
 }
 
 const checkIfNewRelease = (prev, curr) => {
-  if (!arraysAreEqual(prev, curr)){
-    interestCheck(curr);
+  console.log(prev[0])
+  console.log(curr[0])
+  console.log(arraysOfObjectsAreSame(prev, curr))
+  if (!arraysOfObjectsAreSame(prev, curr)){
     if (prev.length === 0){
       // Email author about server restart
       console.log("The server seems to have restarted")
       //mailUtils.sendEmail("admin");
-    } else if (curr.length === 0) {
+    }
+    if (curr.length === 0) {
       // If the results show 0 apartments, retry one time.
+      console.log("Something's off? Trying to update")
       updateApartments();
       return;
     } else {
+      interestCheck(curr);
       // Email users about general update
-      console.log("NEW RELEASE!")
-      mailUtils.sendEmail("subscriber")
+      //console.log("NEW RELEASE!")
+      // mailUtils.sendEmail("subscriber")
     }
-    console.log("New release!")
-    console.log(curr)
+    //console.log("New release!")
+    //console.log(curr)
     savedApartments = curr;
   }
 }
@@ -97,8 +116,8 @@ const checkApartmentsOfInterest = (arr) => {
 
 const updateApartments = () => {
   const result = scrapeApartments().then((apartments) => {
-    console.log("kört scrapeApartments och får: ")
-    console.log(apartments)
+    // console.log("kört scrapeApartments och får: ")
+    // console.log(apartments)
     checkIfNewRelease(savedApartments, apartments);
     return apartments;
   });
@@ -111,7 +130,8 @@ const timedUpdate = () => {
     setTimeout(() => {
       console.log("Refreshing...")
       timedUpdate();
-    }, 1000 * 60 * 5);
+     }, 1000 * 60 * 5);
+  //}, 1000 * 30);
   }).catch(err => console.error("Error in timedUpdate", err))
 }
 
