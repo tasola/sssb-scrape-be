@@ -69,7 +69,7 @@ const checkIfNewRelease = (prev, curr) => {
     if (prev.length === 0){
       // Email author about server restart
       console.log("The server seems to have restarted")
-      mailUtils.sendEmail("admin");
+      //mailUtils.sendEmail("admin");
     } else if (curr.length === 0) {
       // If the results show 0 apartments, retry one time.
       updateApartments();
