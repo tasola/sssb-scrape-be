@@ -96,7 +96,7 @@ const checkIfNewRelease = (prev, curr) => {
       interestCheck(curr);
       // Email users about general update
       //console.log("NEW RELEASE!")
-      // mailUtils.sendEmail("subscriber")
+      mailUtils.sendEmail("subscriber")
     }
     //console.log("New release!")
     //console.log(curr)

@@ -45,12 +45,13 @@ let nyponOptions = {
   to: "petter.tk@hotmail.com",
   subject: "NYPONET UTE",
   text: "Nyponet har släppts!\n\n" +
-        "Lägenhetsnummer: " + 
-        'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
-        'https://localhost:3000/organisation/reset-request/submit?token=' +
-        "Asfasfasfa1231241421asfasfsa" +
-        '\n\n'
+        "Lägenhetsnummer: "
 }
+
+// 'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
+// 'https://localhost:3000/organisation/reset-request/submit?token=' +
+// "Asfasfasfa1231241421asfasfsa" +
+// '\n\n'
 
 const send = (type) => {
   transporter.sendMail(type, (error, info) => {
