@@ -10,20 +10,6 @@ mailConfig = {
   },
 };
 
-
-// mailConfig = {
-//   service: "hotmail",
-// secureConnection: false,
-// port: 465,
-// auth: {
-//   user: "pollisti@hotmail.com",
-//   pass: process.env.HOTMAIL,
-// },
-// tls: {
-//   ciphers:'SSLv3'
-// }
-// }
-
 let transporter = nodemailer.createTransport(mailConfig);
 
 let adminOptions = {
@@ -40,12 +26,12 @@ let subscriberOptions = {
   text: "Det har släppts nya läggor din sjuke fan"
 }
 
-let nyponOptions = {
+const specificOptionsTemplate = {
   from: 'SSSB Info <sssb-scrape@hotmail.com>',
   to: "petter.tk@hotmail.com",
-  subject: "NYPONET UTE",
-  text: "Nyponet har släppts!\n\n" +
-        "Lägenhetsnummer: "
+  subject: "",
+  text: "",
+  html: ""
 }
 
 // 'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
@@ -58,16 +44,31 @@ const send = (type) => {
     if (error) return console.log(error)
     else console.log("The message was sent")
     console.log(info)
-    nyponOptions.text = "Nyponet har släppts! Lägenhetsnummer: "
   });
 }
 
-const decideEmail = (role, apartments) => {
+const generateSpecificContent = (apartments) => {
+  let specificOptions = Object.assign({}, specificOptionsTemplate);
   if (apartments){
+    const grammar = apartments.length > 1 ? "s" : "";
+    specificOptions.subject = "New " + apartments[0].area + " release!"
+    specificOptions.html = "SSSB just released " + apartments.length + " new " + 
+                            apartments[0].area + "-apartment" +  grammar + "!" + 
+                            "\n These are the " + " apartment" + grammar + ": \n"
+                            + "<hr>";
     apartments.forEach((ap) => {
-      nyponOptions.text += ap + " ";
+      specificOptions.html += "<p>Area: " + ap.area + "</p>";
+      specificOptions.html += "<p>Floor: " + ap.floor + "</p>";
+      specificOptions.html += "<p>Apartment number: " + ap.adress.slice(-4) + "</p>";
+      specificOptions.html += "<p>Book it <a href='" + ap.link + "'> here <a/></p>";
+      specificOptions.html += "<hr>";
     })
   }
+  return specificOptions;
+}
+
+const decideEmail = (role, apartments) => {
+  const specificOptions = generateSpecificContent(apartments);
   switch(role){
     case "admin":
       send(adminOptions);
@@ -75,8 +76,8 @@ const decideEmail = (role, apartments) => {
     case "subscriber":
       send(subscriberOptions)
       break;
-    case "nypon":
-      send(nyponOptions)
+    case "specific":
+      send(specificOptions)
       break;
     default:
       send(adminOptions);

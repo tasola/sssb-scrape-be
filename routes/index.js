@@ -25,6 +25,7 @@ const scrapeApartments = async () => {
   const result = await page.evaluate(() => {
     let data = [];
       const primaryData = document.querySelectorAll('.ObjektAdress');
+      const objectLink = document.querySelectorAll('.ObjektAdress > a')
       const metaData = document.querySelectorAll(".ObjektDetaljer > dl > dd")
       const areaData = document.querySelectorAll(".ObjektDetaljer > dl > dd > a")
       for (let i = 0; i < primaryData.length; i++){
@@ -37,6 +38,7 @@ const scrapeApartments = async () => {
            rent: metaData[3 + i * 6].innerHTML.replace(/&nbsp;/gi, ''),
            moveIn: metaData[4 + i * 6].innerHTML,
            queue: metaData[5 + i * 6].innerHTML,
+           link: objectLink[i].href,
          })
       }
       return data
@@ -56,11 +58,12 @@ const arraysOfObjectsAreSame = (prev, curr) => {
   return true;
 }
 
-// Compare two objects. Excludes the attribute "queue" as an email on 
-// every queue update is not required.
+// Compare two objects. Excludes the attribute "queue" and "link"
+// as they can change without changing apartment
 const objectsAreSame = (x, y) => {
   for (let propertyName in x) {
-     if (propertyName !== "queue" && x[propertyName] !== y[propertyName]) {
+     if (propertyName !== "queue" && propertyName !== "link" 
+         && x[propertyName] !== y[propertyName]) {
       console.log("----")
       console.log(x[propertyName])
       console.log("is not equal to")
@@ -78,7 +81,7 @@ const interestCheck = (arr) => {
   if (isOfInterest) {
     console.log("MAILAR OM NYTT NYPON!")
     //console.log(apartmentsOfInterest)
-    mailUtils.sendEmail("nypon", apartmentsOfInterest);
+    mailUtils.sendEmail("specific", apartmentsOfInterest);
   }
 }
 
@@ -98,7 +101,7 @@ const checkIfNewRelease = (prev, curr) => {
     } else {
       interestCheck(curr);
       // Email users about general update
-      //console.log("NEW RELEASE!")
+      console.log("NEW RELEASE!")
       //mailUtils.sendEmail("subscriber")
     }
     //console.log("New release!")
@@ -108,19 +111,18 @@ const checkIfNewRelease = (prev, curr) => {
 }
 
 const checkApartmentsOfInterest = (arr) => {
-  let apartmentNumbers = [];
+  let apartments = [];
   arr.forEach((ap) => {
+    //if (ap.adress.startsWith("Maltgatan 12")){
     if (ap.adress.startsWith("Körsbärsvägen 9")){
-      apartmentNumbers.push(ap.adress.slice(-4))
+      apartments.push(ap);
     }
   })
-  return apartmentNumbers;
+  return apartments;
 }
 
 const updateApartments = () => {
   const result = scrapeApartments().then((apartments) => {
-    // console.log("kört scrapeApartments och får: ")
-    // console.log(apartments)
     checkIfNewRelease(savedApartments, apartments);
     return apartments;
   });
@@ -133,8 +135,8 @@ const timedUpdate = () => {
     setTimeout(() => {
       console.log("Refreshing...")
       timedUpdate();
-  //   }, 1000 * 60 * 5);
-  }, 1000 * 30);
+     }, 1000 * 60 * 5);
+  //}, 1000 * 30);
   }).catch(err => console.error("Error in timedUpdate", err))
 }
 
