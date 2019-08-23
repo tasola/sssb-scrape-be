@@ -34,6 +34,14 @@ const specificOptionsTemplate = {
   html: ""
 }
 
+const shortTermOptionsTemplate = {
+  from: 'SSSB Info <sssb-scrape@hotmail.com>',
+  to: "petter.tk@hotmail.com",
+  subject: "",
+  text: "",
+  html: ""
+}
+
 // 'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
 // 'https://localhost:3000/organisation/reset-request/submit?token=' +
 // "Asfasfasfa1231241421asfasfsa" +
@@ -67,8 +75,28 @@ const generateSpecificContent = (apartments) => {
   return specificOptions;
 }
 
+const generateShortTermContent = (apartments) => {
+  let shortTermOptions = Object.assign({}, shortTermOptionsTemplate);
+  if (apartments){
+    const grammar = apartments.length > 1 ? "s" : "";
+    shortTermOptions.subject = "New short-term release for "
+    shortTermOptions.html = "SSSB just released " + apartments.length + " new " + 
+                            apartments[0].area + "-apartment" +  grammar + "!" + 
+                            "\n These are the " + " apartment" + grammar + ": \n"
+                            + "<hr>";
+    apartments.forEach((ap) => {
+      shortTermOptions.subject += "<p>" + ap.area + " " + "</p>"
+      shortTermOptions.html += "<p>Area: " + ap.area + "</p>";
+      shortTermOptions.html += "<p>Floor: " + ap.floor + "</p>";
+      shortTermOptions.html += "<p>Apartment number: " + ap.adress.slice(-4) + "</p>";
+      shortTermOptions.html += "<p>Book it <a href='" + ap.link + "'> here <a/></p>";
+      shortTermOptions.html += "<hr>";
+    })
+  }
+  return shortTermOptions;
+}
+
 const decideEmail = (role, apartments) => {
-  const specificOptions = generateSpecificContent(apartments);
   switch(role){
     case "admin":
       send(adminOptions);
@@ -77,7 +105,12 @@ const decideEmail = (role, apartments) => {
       send(subscriberOptions)
       break;
     case "specific":
-      send(specificOptions)
+      const specificContent = generateSpecificContent(apartments)
+      send(specificContent)
+      break;
+    case "shortTerm":
+      const shortTermContent = generateShortTermContent(apartments)
+      send(shortTermContent)
       break;
     default:
       send(adminOptions);

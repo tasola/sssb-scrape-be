@@ -75,6 +75,30 @@ const objectsAreSame = (x, y) => {
   return true;
 }
 
+let amountOfShortTerms = (prev, curr) => {
+  amountOfShortTerms = 0;
+  occurances = {};
+  prevAndCurr = prev.concat(curr);
+  prevAndCurr.map((obj) => {
+    occurances[obj.id] = occurances[obj.id] ? occurances[obj.id]+1 : 1;
+  })
+  for (let attr in occurances){
+    if (occurances[attr] !== 1){
+      shortTermsAmount++;
+    }
+  }
+  return amountOfShortTerms;
+}
+
+const getTheShortTerms = (amountOfShortTerms) => {
+  console.log("New short term-apartments!")
+  let shortTerms = [];
+  for (let i = 0; i < amountOfShortTerms; i++){
+    shortTerms.push(curr[i]);
+  }
+  return shortTerms;
+}
+
 const interestCheck = (arr) => {
   const apartmentsOfInterest = checkApartmentsOfInterest(arr);
   const isOfInterest = apartmentsOfInterest.length > 0;
@@ -100,8 +124,14 @@ const checkIfNewRelease = (prev, curr) => {
       return;
     } else {
       interestCheck(curr);
+      let shortTermAmount = amountOfShortTerms(prev, curr);
+      if (shortTermAmount > 0) {
+        mailUtils.sendEmail("shortTerm", getTheShortTerms(shortTermAmount));
+      } else {
+        console.log("New release!")
+        mailUtils.sendEmail("subscriber")
+      }
       // Email users about general update
-      console.log("NEW RELEASE!")
       //mailUtils.sendEmail("subscriber")
     }
     //console.log("New release!")
