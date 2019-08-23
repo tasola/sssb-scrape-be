@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const url = 'https://www.sssb.se/soka-bostad/sok-ledigt/lediga-bostader/?paginationantal=50';
+const url = 'https://www.sssb.se/soka-bostad/sok-ledigt/lediga-bostader/?paginationantal=100';
 const puppeteer = require('puppeteer');
 const mailUtils = require("./../utils/mail.js");
 
@@ -56,15 +56,20 @@ const arraysOfObjectsAreSame = (prev, curr) => {
   return true;
 }
 
+// Compare two objects. Excludes the attribute "queue" as an email on 
+// every queue update is not required.
 const objectsAreSame = (x, y) => {
-  var objectsAreSame = true;
-  for(var propertyName in x) {
-     if(x[propertyName] !== y[propertyName]) {
-        objectsAreSame = false;
-        break;
+  for (let propertyName in x) {
+     if (propertyName !== "queue" && x[propertyName] !== y[propertyName]) {
+      console.log("----")
+      console.log(x[propertyName])
+      console.log("is not equal to")
+      console.log(y[propertyName])
+      console.log("----")
+      return false;
      }
   }
-  return objectsAreSame;
+  return true;
 }
 
 const interestCheck = (arr) => {
@@ -78,8 +83,6 @@ const interestCheck = (arr) => {
 }
 
 const checkIfNewRelease = (prev, curr) => {
-  console.log(prev[0])
-  console.log(curr[0])
   console.log(arraysOfObjectsAreSame(prev, curr))
   if (!arraysOfObjectsAreSame(prev, curr)){
     if (prev.length === 0){
@@ -96,7 +99,7 @@ const checkIfNewRelease = (prev, curr) => {
       interestCheck(curr);
       // Email users about general update
       //console.log("NEW RELEASE!")
-      mailUtils.sendEmail("subscriber")
+      //mailUtils.sendEmail("subscriber")
     }
     //console.log("New release!")
     //console.log(curr)
@@ -130,8 +133,8 @@ const timedUpdate = () => {
     setTimeout(() => {
       console.log("Refreshing...")
       timedUpdate();
-     }, 1000 * 60 * 5);
-  //}, 1000 * 30);
+  //   }, 1000 * 60 * 5);
+  }, 1000 * 30);
   }).catch(err => console.error("Error in timedUpdate", err))
 }
 
