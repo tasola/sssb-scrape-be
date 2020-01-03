@@ -57,7 +57,8 @@ const send = type => {
     transporter.sendMail(type, (error, info) => {
       if (error) return console.log(error)
       else console.log('The message was sent')
-      console.log(info + '\n')
+      console.log(info)
+      console.log('\n')
     })
   }
 }
