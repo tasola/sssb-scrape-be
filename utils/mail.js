@@ -39,23 +39,12 @@ const sendProd = type => {
 const generateContent = (apartments, isShortTerm) => {
   let template = options.template
   let content = Object.assign({}, template)
-  const shortTerm = isShortTerm ? 'SHORT TERM ' : ''
+  const shortTerm = isShortTerm ? 'SHORT TERM' : ''
   if (apartments) {
     const grammar = apartments.length > 1 ? 's' : ''
-    content.subject = 'New ' + shortTerm + apartments[0].area + ' release!'
-    content.html =
-      'SSSB just released ' +
-      apartments.length +
-      ' new ' +
-      apartments[0].area +
-      '-apartment' +
-      grammar +
-      '!' +
-      "\n Here's the " +
-      ' apartment' +
-      grammar +
-      ': \n' +
-      '<hr>'
+    const announcement = `${apartments.length} new ${shortTerm}${apartments[0].area} release${grammar}!`
+    content.subject = announcement
+    content.html = `SSSB just released ${announcement}\n Here's the apartment${grammar}:\n</hr>`
     apartments.forEach(ap => {
       content.html += '<p>Area: ' + ap.area + '</p>'
       content.html += '<p>Floor: ' + ap.floor + '</p>'
