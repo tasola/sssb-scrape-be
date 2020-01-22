@@ -8,31 +8,71 @@ const checkIfNewRelease = (prev, curr) => {
   const areArraysIdentical = arraysOfObjectsAreSame(prev, curr)
   log.isThisANewRelease(areArraysIdentical, prev, curr)
   if (!areArraysIdentical) {
-    if (prev.length === 0) {
-      // Email author about server restart
-      console.log('The server seems to have restarted')
-      //mailUtils.sendEmail("admin");
-    }
-    if (curr.length === 0) {
-      // If the results show 0 apartments, retry one time.
-      console.log("Something's off? Trying to update")
-      updateApartments()
-      return curr
-    } else {
-      let shortTermAmount = amountOfShortTerms(prev, curr)
-      if (shortTermAmount > 0) {
-        mailUtils.sendEmail('shortTerm', getTheShortTerms(shortTermAmount))
-      } else {
-        interestCheck(curr)
-        console.log('New release!')
-      }
-    }
+    return handlePotentialNewRelease(prev, curr)
   }
   return curr
 }
 
+const handlePotentialNewRelease = (prev, curr) => {
+  if (prev.length === 0) {
+    handleEmptyPreviousBatch(prev, curr)
+  }
+  if (curr.length === 0) {
+    return handleEmptyCurrentBatch(prev, curr)
+  } else {
+    handleNewRelease(prev, curr)
+  }
+  return curr
+}
+
+// If zero apartments are in prev, it usually means that the scraper has restarted the
+// process due to circumstances described in handleEmptyCurrentBatch().
+// The process is intended (as of 2020-01-22) to stay in this "loop" of restarts as long
+// as the scraped site does not provide any data.
+// At an early stage admin was emailed when this occured, but this might not be a good
+// idea if the scraped site's state remains empty for a long time.
+const handleEmptyPreviousBatch = (prev, curr) => {
+  log.handleEmptyPreviousBatch(prev, curr)
+}
+
+// If zero new apartments were scraped, something might be wrong (the scraped site might
+// not be responding for instance). Hence, one more run of updateApartments() is run just
+// in case.
+// BEWARE: it is important that curr is returned, so that the current process is killed,
+// rather than starting multiple processes in parallel.
+const handleEmptyCurrentBatch = (prev, curr) => {
+  log.handleEmptyCurrentBatch(prev, curr)
+  updateApartments()
+  return curr
+}
+
+// Looks for clones between prev and curr. If some object is not the same in the two, it
+// implicated that a short term apartment has been released (ordinary apartments are still
+// up, but new ones have been added without a proper flush). If this is the case, prepare
+// the emailing to subscribers. Else presume that a proper flush has been made.
+const handleNewRelease = (prev, curr) => {
+  let shortTermAmount = amountOfShortTerms(prev, curr)
+  log.handleNewRelease(prev, curr, shortTermAmount)
+  if (shortTermAmount > 0) {
+    handleNewShortTerms()
+  } else {
+    handleNewFlush(curr)
+  }
+}
+
+const handleNewShortTerms = () => {
+  const shortTerms = getTheShortTerms(shortTermAmount)
+  log.handleShortTerms(shortTerms)
+  mailUtils.sendEmail('shortTerm', shortTerms)
+}
+
+const handleNewFlush = curr => {
+  log.handleNewFlush()
+  interestCheck(curr)
+}
+
 // Concatenate the list of previous apartments with the new. Check if any
-// object's id matches. In that case some short term apartment has been released.
+// object's id matches. In that case some short term apartment(s) has been released.
 const amountOfShortTerms = (prev, curr) => {
   let amountOfShortTerms = 0
   occurances = {}
@@ -42,7 +82,7 @@ const amountOfShortTerms = (prev, curr) => {
   })
   for (let attr in occurances) {
     if (occurances[attr] !== 1) {
-      shortTermsAmount++
+      amountOfShortTerms++
     }
   }
   return amountOfShortTerms
