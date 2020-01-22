@@ -1,11 +1,13 @@
 const { arraysOfObjectsAreSame } = require('../utils/utils')
+const log = require('../utils/log')
 
 // TODO: Extract this?
 const mailUtils = require('../utils/mail.js')
 
 const checkIfNewRelease = (prev, curr) => {
-  console.log(arraysOfObjectsAreSame(prev, curr))
-  if (!arraysOfObjectsAreSame(prev, curr)) {
+  const areArraysIdentical = arraysOfObjectsAreSame(prev, curr)
+  log.isThisANewRelease(areArraysIdentical, prev, curr)
+  if (!areArraysIdentical) {
     if (prev.length === 0) {
       // Email author about server restart
       console.log('The server seems to have restarted')
