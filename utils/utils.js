@@ -17,11 +17,6 @@ const objectsAreSame = (x, y) => {
       propertyName !== 'link' &&
       x[propertyName] !== y[propertyName]
     ) {
-      console.log('----')
-      console.log(x[propertyName])
-      console.log('is not equal to')
-      console.log(y[propertyName])
-      console.log('----')
       return false
     }
   }
@@ -36,5 +31,6 @@ const removeLeadingZeroFromString = string => {
 
 module.exports = {
   arraysOfObjectsAreSame: arraysOfObjectsAreSame,
+  objectsAreSame,
   removeLeadingZeroFromString
 }

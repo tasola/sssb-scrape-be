@@ -91,6 +91,7 @@ module.exports = {
   sendEmail: (role, apartments) => {
     decideEmail(role, apartments)
   },
+  generateContent,
   generateShortTermContent,
   generateSpecificContent,
   send

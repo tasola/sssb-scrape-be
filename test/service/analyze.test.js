@@ -1,6 +1,8 @@
 process.env.NODE_ENV = 'test'
+const proxyquire = require('proxyquire')
 const analyze = require('../../services/analyze')
 const refresh = require('../../services/refresh')
+const mailUtils = require('../../utils/mail')
 
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config()
@@ -61,14 +63,6 @@ describe('analyze', () => {
     it('should return curr', async () => {
       const result = analyze.handlePotentialNewRelease(prev, curr)
       result.should.deepEqual(curr)
-    })
-  })
-
-  describe('handleEmptyCurrentBatch()', () => {
-    it('should call updateApartments()', async () => {
-      const updateApartmentsStub = sinon.stub(refresh, 'updateApartments')
-      refresh.updateApartments()
-      sinon.assert.calledWith(updateApartmentsStub)
     })
   })
 

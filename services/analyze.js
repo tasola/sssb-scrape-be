@@ -42,6 +42,7 @@ const handleEmptyPreviousBatch = (prev, curr) => {
 // BEWARE: it is important that curr is returned, so that the current process is killed,
 // rather than starting multiple processes in parallel.
 const handleEmptyCurrentBatch = (prev, curr) => {
+  console.log('i handleemptycurrentbatch')
   log.handleEmptyCurrentBatch(prev, curr)
   updateApartments()
   return curr
@@ -121,5 +122,6 @@ const getTheShortTerms = (amountOfShortTerms, curr) => {
 module.exports = {
   checkIfNewRelease: checkIfNewRelease,
   amountOfShortTerms,
-  handlePotentialNewRelease
+  handlePotentialNewRelease,
+  handleEmptyCurrentBatch
 }
