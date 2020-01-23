@@ -1,5 +1,6 @@
 const nodemailer = require('nodemailer')
 const options = require('./options')
+const doNotLog = process.env.NODE_ENV === 'test'
 require('dotenv').config()
 
 mailConfig = {
@@ -23,6 +24,7 @@ const send = content => {
 }
 
 const sendDev = content => {
+  if (doNotLog) return
   console.log('In prod this mail would have been sent with data:\n ')
   console.log(content)
 }

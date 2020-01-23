@@ -1,4 +1,5 @@
 const { arraysOfObjectsAreSame } = require('../utils/utils')
+const { updateApartments } = require('../services/refresh')
 const log = require('../utils/log')
 
 // TODO: Extract this?
@@ -54,14 +55,14 @@ const handleNewRelease = (prev, curr) => {
   let shortTermAmount = amountOfShortTerms(prev, curr)
   log.handleNewRelease(prev, curr, shortTermAmount)
   if (shortTermAmount > 0) {
-    handleNewShortTerms()
+    handleNewShortTerms(shortTermAmount, curr)
   } else {
     handleNewFlush(curr)
   }
 }
 
-const handleNewShortTerms = () => {
-  const shortTerms = getTheShortTerms(shortTermAmount)
+const handleNewShortTerms = (shortTermAmount, curr) => {
+  const shortTerms = getTheShortTerms(shortTermAmount, curr)
   log.handleShortTerms(shortTerms)
   mailUtils.sendEmail('shortTerm', shortTerms)
 }
@@ -109,7 +110,7 @@ const checkApartmentsOfInterest = arr => {
 
 // Return an array of the short term apartments. This method assumes that the latest
 // release will be placed at the top of the page (which it has all of 2019)
-const getTheShortTerms = amountOfShortTerms => {
+const getTheShortTerms = (amountOfShortTerms, curr) => {
   let shortTerms = []
   for (let i = 0; i < amountOfShortTerms; i++) {
     shortTerms.push(curr[i])
@@ -118,5 +119,7 @@ const getTheShortTerms = amountOfShortTerms => {
 }
 
 module.exports = {
-  checkIfNewRelease: checkIfNewRelease
+  checkIfNewRelease: checkIfNewRelease,
+  amountOfShortTerms,
+  handlePotentialNewRelease
 }
