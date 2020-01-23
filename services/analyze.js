@@ -110,7 +110,6 @@ const checkApartmentsOfInterest = arr => {
 // Return an array of the short term apartments. This method assumes that the latest
 // release will be placed at the top of the page (which it has all of 2019)
 const getTheShortTerms = amountOfShortTerms => {
-  console.log('New short term-apartments!')
   let shortTerms = []
   for (let i = 0; i < amountOfShortTerms; i++) {
     shortTerms.push(curr[i])

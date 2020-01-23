@@ -28,6 +28,13 @@ const objectsAreSame = (x, y) => {
   return true
 }
 
+const removeLeadingZeroFromString = string => {
+  const _string = string.toString()
+  if (_string.length > 1 && _string[0] === '0') return _string.substr(1)
+  return _string
+}
+
 module.exports = {
-  arraysOfObjectsAreSame: arraysOfObjectsAreSame
+  arraysOfObjectsAreSame: arraysOfObjectsAreSame,
+  removeLeadingZeroFromString
 }

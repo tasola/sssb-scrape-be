@@ -14,21 +14,21 @@ mailConfig = {
 
 let transporter = nodemailer.createTransport(mailConfig)
 
-const send = type => {
+const send = content => {
   if (process.env.NODE_ENV !== 'production') {
-    sendDev(type)
+    sendDev(content)
   } else {
-    sendProd(type)
+    sendProd(content)
   }
 }
 
-const sendDev = type => {
+const sendDev = content => {
   console.log('In prod this mail would have been sent with data:\n ')
-  console.log(type)
+  console.log(content)
 }
 
-const sendProd = type => {
-  transporter.sendMail(type, (error, info) => {
+const sendProd = content => {
+  transporter.sendMail(content, (error, info) => {
     if (error) return console.log(error)
     else console.log('The message was sent')
     console.log(info)
@@ -36,10 +36,11 @@ const sendProd = type => {
   })
 }
 
-const generateContent = (apartments, isShortTerm) => {
+const generateContent = (apartments, recipient, isShortTerm) => {
   let template = options.template
   let content = Object.assign({}, template)
-  const shortTerm = isShortTerm ? 'SHORT TERM' : ''
+  content.to = recipient
+  const shortTerm = isShortTerm ? 'SHORT TERM ' : ''
   if (apartments) {
     const grammar = apartments.length > 1 ? 's' : ''
     const announcement = `${apartments.length} new ${shortTerm}${apartments[0].area} release${grammar}!`
@@ -56,8 +57,11 @@ const generateContent = (apartments, isShortTerm) => {
   return content
 }
 
-const generateSpecificContent = apartments => generateContent(apartments, false)
-const generateShortTermContent = apartments => generateContent(apartments, true)
+const generateSpecificContent = (apartments, recipient) =>
+  generateContent(apartments, recipient, false)
+
+const generateShortTermContent = (apartments, recipient) =>
+  generateContent(apartments, recipient, true)
 
 const decideEmail = (role, apartments) => {
   const { admin, subscriber } = options
@@ -84,5 +88,8 @@ const decideEmail = (role, apartments) => {
 module.exports = {
   sendEmail: (role, apartments) => {
     decideEmail(role, apartments)
-  }
+  },
+  generateShortTermContent,
+  generateSpecificContent,
+  send
 }
