@@ -61,6 +61,22 @@ const generateContent = (apartments, recipient, isShortTerm) => {
   return content
 }
 
+generateAdminNotification = (usersSubscriptions, adminEmail) => {
+  let template = options.template
+  let content = Object.assign({}, template)
+  const usersObjectKeys = Object.keys(usersSubscriptions)
+  content.to = adminEmail
+  content.subject = 'New batch has been mailed to some users'
+  content.html = 'Here is the object that has been iterated and mailed'
+  usersObjectKeys.forEach(userEmail => {
+    content.html += '<p>Email: ' + userEmail + '</p>'
+    content.html += '<p>Preferences: ' + usersSubscriptions[userEmail] + '</p>'
+    content.html += '<hr>'
+  })
+
+  return content
+}
+
 // List every unique area name, separated by commas. The last two objects are separated by a '&'
 const getAllUniqueAreas = apartments => {
   let areas = ''
@@ -72,48 +88,23 @@ const getAllUniqueAreas = apartments => {
     }
   })
   areas = areas.substring(0, areas.length - 2)
-  // if (listedAreas.length === 2) areas = areas.split(',').join(' &')
   const pos = areas.lastIndexOf(',')
   if (listedAreas.length > 1)
     areas = areas.substring(0, pos) + ' &' + areas.substring(pos + 1)
   return areas
 }
 
-const generateSpecificContent = (apartments, recipient) =>
+const generateGeneralContent = (apartments, recipient) =>
   generateContent(apartments, recipient, false)
 
 const generateShortTermContent = (apartments, recipient) =>
   generateContent(apartments, recipient, true)
 
-const decideEmail = (role, apartments) => {
-  const { admin, subscriber } = options
-  switch (role) {
-    case 'admin':
-      send(admin)
-      break
-    case 'subscriber':
-      send(subscriber)
-      break
-    case 'specific':
-      const specificContent = generateSpecificContent(apartments)
-      send(specificContent)
-      break
-    case 'shortTerm':
-      const shortTermContent = generateShortTermContent(apartments)
-      send(shortTermContent)
-      break
-    default:
-      send(admin)
-  }
-}
-
 module.exports = {
-  sendEmail: (role, apartments) => {
-    decideEmail(role, apartments)
-  },
   generateContent,
   getAllUniqueAreas,
   generateShortTermContent,
-  generateSpecificContent,
+  generateGeneralContent,
+  generateAdminNotification,
   send
 }

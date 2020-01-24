@@ -5,7 +5,7 @@ const emailSubscribers = usersSubscriptions => {
   notifyAdmin(usersSubscriptions)
   Object.keys(usersSubscriptions).forEach(userEmail => {
     const userSpecificSubscriptions = usersSubscriptions[userEmail]
-    const generatedUserMail = mailUtils.generateShortTermContent(
+    const generatedUserMail = mailUtils.generateGeneralContent(
       userSpecificSubscriptions,
       userEmail
     )

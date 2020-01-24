@@ -81,10 +81,10 @@ describe('mail', () => {
     })
   })
 
-  describe('generateSpecificContent()', () => {
+  describe('generateGeneralContent()', () => {
     it('should return a correct formatted email', () => {
       const recipient = 'mail1@mail.com'
-      const email = mail.generateSpecificContent(areas, recipient)
+      const email = mail.generateGeneralContent(areas, recipient)
       email.should.deepEqual(correctEmail)
     })
   })

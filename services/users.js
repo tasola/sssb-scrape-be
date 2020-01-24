@@ -2,6 +2,7 @@ var axios = require('axios')
 
 const { removeLeadingZeroFromString } = require('../utils/utils')
 const shortTermMailer = require('../services/mail/short-term')
+const generalMailer = require('../services/mail/general')
 const isNotProduction = process.env.NODE_ENV !== 'production'
 
 // let userMatcherBaseUrl = process.env.USER_MATCHER_BASE_URL
@@ -11,9 +12,15 @@ if (isNotProduction) {
   userMatcherBaseUrl = 'http://localhost:8080'
 }
 
-const handleNewShortTerms = async shortTerms => {
+const handleShortTermRelease = async shortTerms => {
   const usersSubscriptions = arrangeUsersSubscriptions(shortTerms)
-  emailSubscribers(usersSubscriptions)
+  factory.emailSubscribersShortTermRelease(usersSubscriptions)
+  return usersSubscriptions
+}
+
+const handleGeneralRelease = apartments => {
+  const usersSubscriptions = arrangeUsersSubscriptions(apartments)
+  emailSubscribersGeneralRelease(usersSubscriptions)
   return usersSubscriptions
 }
 
@@ -66,13 +73,25 @@ const updateUsersSubscriptions = (
   return usersSubscriptions
 }
 
-const emailSubscribers = usersSubscriptions => {
+const emailSubscribersShortTermRelease = usersSubscriptions =>
   shortTermMailer.emailSubscribers(usersSubscriptions)
+
+const emailSubscribersGeneralRelease = usersSubscriptions =>
+  generalMailer.emailSubscribers(usersSubscriptions)
+
+// After compilation the functions are exported with different signatures, with
+// full name and while stubbing we stub the global function but while calling it
+// from within the other function, we call the local function. Hence, it is required
+// that all internal and external function calls go through this factory.
+const factory = {
+  emailSubscribersShortTermRelease
 }
 
 module.exports = {
-  handleNewShortTerms,
+  handleShortTermRelease,
+  handleGeneralRelease,
   arrangeUsersSubscriptions,
   updateUsersSubscriptions,
-  getSubscribersFor
+  getSubscribersFor,
+  factory
 }

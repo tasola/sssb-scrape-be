@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "test": "mocha"
+    "test": "mocha --exit"
   },
   "dependencies": {
     "axios": "^0.19.2",

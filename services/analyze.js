@@ -1,6 +1,6 @@
 const { arraysOfObjectsAreSame } = require('../utils/utils')
 const { updateApartments } = require('../services/refresh')
-const mailUtils = require('../utils/mail.js')
+const users = require('./users')
 const log = require('../utils/log')
 
 const checkIfNewRelease = (prev, curr) => {
@@ -62,12 +62,12 @@ const handleNewRelease = (prev, curr) => {
 const handleNewShortTerms = (shortTermAmount, curr) => {
   const shortTerms = getTheShortTerms(shortTermAmount, curr)
   log.handleShortTerms(shortTerms)
-  mailUtils.sendEmail('shortTerm', shortTerms)
+  users.handleShortTermRelease(shortTerms)
 }
 
 const handleNewFlush = curr => {
   log.handleNewFlush()
-  interestCheck(curr)
+  users.handleGeneralRelease(curr)
 }
 
 // Concatenate the list of previous apartments with the new. Check if any
@@ -85,25 +85,6 @@ const amountOfShortTerms = (prev, curr) => {
     }
   }
   return amountOfShortTerms
-}
-
-const interestCheck = arr => {
-  const apartmentsOfInterest = checkApartmentsOfInterest(arr)
-  const isOfInterest = apartmentsOfInterest.length > 0
-  if (isOfInterest) {
-    console.log('Nya Nypon har kommit - mailar')
-    mailUtils.sendEmail('specific', apartmentsOfInterest)
-  }
-}
-
-const checkApartmentsOfInterest = arr => {
-  let apartments = []
-  arr.forEach(ap => {
-    if (ap.adress.startsWith('Körsbärsvägen 9')) {
-      apartments.push(ap)
-    }
-  })
-  return apartments
 }
 
 // Return an array of the short term apartments. This method assumes that the latest

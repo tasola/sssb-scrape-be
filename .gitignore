@@ -18,6 +18,7 @@
 .env.test.local
 .env.production.local
 /.env
+admin-emails.js
 /admin-emails.js
 
 npm-debug.log*
