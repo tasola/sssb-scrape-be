@@ -1,8 +1,5 @@
 process.env.NODE_ENV = 'test'
-const proxyquire = require('proxyquire')
 const analyze = require('../../services/analyze')
-const refresh = require('../../services/refresh')
-const mailUtils = require('../../utils/mail')
 
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config()
@@ -63,6 +60,34 @@ describe('analyze', () => {
     it('should return curr', async () => {
       const result = analyze.handlePotentialNewRelease(prev, curr)
       result.should.deepEqual(curr)
+    })
+  })
+
+  describe('handleNewRelease()', () => {
+    it('should call amountOfShortTerms', () => {
+      const amountOfShortTermsStub = sinon.stub(
+        analyze.factory,
+        'amountOfShortTerms'
+      )
+      analyze.factory.handleNewRelease(prev, curr)
+      amountOfShortTermsStub.callCount.should.equal(1)
+    })
+
+    it('should call handleNewShortTerms once if any short terms are detected', () => {
+      sinon.stub(analyze.factory, 'amountOfShortTerms').returns(1)
+      const handleNewShortTermsStub = sinon.stub(
+        analyze.factory,
+        'handleNewShortTerms'
+      )
+      analyze.factory.handleNewRelease(prev, curr)
+      handleNewShortTermsStub.callCount.should.equal(1)
+    })
+
+    it('should call handleNewFlush once if no short terms are detected', () => {
+      sinon.stub(analyze.factory, 'amountOfShortTerms').returns(0)
+      const handleNewFlushStub = sinon.stub(analyze.factory, 'handleNewFlush')
+      analyze.factory.handleNewRelease(prev, curr)
+      handleNewFlushStub.callCount.should.equal(1)
     })
   })
 

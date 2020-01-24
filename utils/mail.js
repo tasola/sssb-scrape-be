@@ -45,7 +45,9 @@ const generateContent = (apartments, recipient, isShortTerm) => {
   const shortTerm = isShortTerm ? 'SHORT TERM ' : ''
   if (apartments) {
     const grammar = apartments.length > 1 ? 's' : ''
-    const announcement = `${apartments.length} new ${shortTerm}${apartments[0].area} release${grammar}!`
+    const announcement = `${
+      apartments.length
+    } new ${shortTerm}${getAllUniqueAreas(apartments)} release${grammar}!`
     content.subject = announcement
     content.html = `SSSB just released ${announcement}\n Here's the apartment${grammar}:\n</hr>`
     apartments.forEach(ap => {
@@ -57,6 +59,24 @@ const generateContent = (apartments, recipient, isShortTerm) => {
     })
   }
   return content
+}
+
+// List every unique area name, separated by commas. The last two objects are separated by a '&'
+const getAllUniqueAreas = apartments => {
+  let areas = ''
+  let listedAreas = []
+  apartments.forEach(ap => {
+    if (!listedAreas.includes(ap.area)) {
+      areas += ap.area + ', '
+      listedAreas.push(ap.area)
+    }
+  })
+  areas = areas.substring(0, areas.length - 2)
+  // if (listedAreas.length === 2) areas = areas.split(',').join(' &')
+  const pos = areas.lastIndexOf(',')
+  if (listedAreas.length > 1)
+    areas = areas.substring(0, pos) + ' &' + areas.substring(pos + 1)
+  return areas
 }
 
 const generateSpecificContent = (apartments, recipient) =>
@@ -92,6 +112,7 @@ module.exports = {
     decideEmail(role, apartments)
   },
   generateContent,
+  getAllUniqueAreas,
   generateShortTermContent,
   generateSpecificContent,
   send

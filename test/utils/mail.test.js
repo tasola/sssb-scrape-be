@@ -36,17 +36,17 @@ describe('mail', () => {
   const correctEmail = {
     from: 'SSSB Info <sssb-scrape@hotmail.com>',
     to: 'mail1@mail.com',
-    subject: '3 new Nyponet releases!',
+    subject: '3 new Nyponet & Kungshamra releases!',
     text: '',
-    html: `SSSB just released 3 new Nyponet releases!\n Here\'s the apartments:\n</hr><p>Area: Nyponet</p><p>Floor: 18</p><p>Apartment number: 2122</p><p>Book it <a href=\'www.nyponet1.se\'> here <a/></p><hr><p>Area: Nyponet</p><p>Floor: 05</p><p>Apartment number: 2122</p><p>Book it <a href=\'www.nyponet2.se\'> here <a/></p><hr><p>Area: Kungshamra</p><p>Floor: 01</p><p>Apartment number: 2122</p><p>Book it <a href=\'www.kungshamra1.se\'> here <a/></p><hr>`
+    html: `SSSB just released 3 new Nyponet & Kungshamra releases!\n Here\'s the apartments:\n</hr><p>Area: Nyponet</p><p>Floor: 18</p><p>Apartment number: 2122</p><p>Book it <a href=\'www.nyponet1.se\'> here <a/></p><hr><p>Area: Nyponet</p><p>Floor: 05</p><p>Apartment number: 2122</p><p>Book it <a href=\'www.nyponet2.se\'> here <a/></p><hr><p>Area: Kungshamra</p><p>Floor: 01</p><p>Apartment number: 2122</p><p>Book it <a href=\'www.kungshamra1.se\'> here <a/></p><hr>`
   }
 
   const correctShortTermEmail = {
     from: 'SSSB Info <sssb-scrape@hotmail.com>',
     to: 'mail1@mail.com',
-    subject: '3 new SHORT TERM Nyponet releases!',
+    subject: '3 new SHORT TERM Nyponet & Kungshamra releases!',
     text: '',
-    html: `SSSB just released 3 new SHORT TERM Nyponet releases!\n Here\'s the apartments:\n</hr><p>Area: Nyponet</p><p>Floor: 18</p><p>Apartment number: 2122</p><p>Book it <a href=\'www.nyponet1.se\'> here <a/></p><hr><p>Area: Nyponet</p><p>Floor: 05</p><p>Apartment number: 2122</p><p>Book it <a href=\'www.nyponet2.se\'> here <a/></p><hr><p>Area: Kungshamra</p><p>Floor: 01</p><p>Apartment number: 2122</p><p>Book it <a href=\'www.kungshamra1.se\'> here <a/></p><hr>`
+    html: `SSSB just released 3 new SHORT TERM Nyponet & Kungshamra releases!\n Here\'s the apartments:\n</hr><p>Area: Nyponet</p><p>Floor: 18</p><p>Apartment number: 2122</p><p>Book it <a href=\'www.nyponet1.se\'> here <a/></p><hr><p>Area: Nyponet</p><p>Floor: 05</p><p>Apartment number: 2122</p><p>Book it <a href=\'www.nyponet2.se\'> here <a/></p><hr><p>Area: Kungshamra</p><p>Floor: 01</p><p>Apartment number: 2122</p><p>Book it <a href=\'www.kungshamra1.se\'> here <a/></p><hr>`
   }
 
   describe('generateContent()', () => {
@@ -55,6 +55,29 @@ describe('mail', () => {
       const isShortTerm = false
       const email = mail.generateContent(areas, recipient, isShortTerm)
       email.should.deepEqual(correctEmail)
+    })
+  })
+
+  describe('generateContent()', () => {
+    it('should return "Nyponet"', () => {
+      const oneArea = [areas[0]]
+      const uniqueAreas = mail.getAllUniqueAreas(oneArea)
+      uniqueAreas.should.equal('Nyponet')
+    })
+    it('should return "Nyponet & Kungshamra"', () => {
+      const uniqueAreas = mail.getAllUniqueAreas(areas)
+      uniqueAreas.should.equal('Nyponet & Kungshamra')
+    })
+    it('should return "Nyponet, Kungshamra & Hugin"', () => {
+      const cloneAreas = areas.slice()
+      cloneAreas.push({
+        area: 'Hugin',
+        floor: '05',
+        adress: '0823-3142-2122',
+        link: 'www.hugin1.se'
+      })
+      uniqueAreas = mail.getAllUniqueAreas(cloneAreas)
+      uniqueAreas.should.equal('Nyponet, Kungshamra & Hugin')
     })
   })
 

@@ -1,9 +1,7 @@
 const { arraysOfObjectsAreSame } = require('../utils/utils')
 const { updateApartments } = require('../services/refresh')
-const log = require('../utils/log')
-
-// TODO: Extract this?
 const mailUtils = require('../utils/mail.js')
+const log = require('../utils/log')
 
 const checkIfNewRelease = (prev, curr) => {
   const areArraysIdentical = arraysOfObjectsAreSame(prev, curr)
@@ -42,7 +40,6 @@ const handleEmptyPreviousBatch = (prev, curr) => {
 // BEWARE: it is important that curr is returned, so that the current process is killed,
 // rather than starting multiple processes in parallel.
 const handleEmptyCurrentBatch = (prev, curr) => {
-  console.log('i handleemptycurrentbatch')
   log.handleEmptyCurrentBatch(prev, curr)
   updateApartments()
   return curr
@@ -53,12 +50,12 @@ const handleEmptyCurrentBatch = (prev, curr) => {
 // up, but new ones have been added without a proper flush). If this is the case, prepare
 // the emailing to subscribers. Else presume that a proper flush has been made.
 const handleNewRelease = (prev, curr) => {
-  let shortTermAmount = amountOfShortTerms(prev, curr)
+  let shortTermAmount = factory.amountOfShortTerms(prev, curr)
   log.handleNewRelease(prev, curr, shortTermAmount)
   if (shortTermAmount > 0) {
-    handleNewShortTerms(shortTermAmount, curr)
+    factory.handleNewShortTerms(shortTermAmount, curr)
   } else {
-    handleNewFlush(curr)
+    factory.handleNewFlush(curr)
   }
 }
 
@@ -119,9 +116,20 @@ const getTheShortTerms = (amountOfShortTerms, curr) => {
   return shortTerms
 }
 
+// After compilation the functions are exported with different signatures, with
+// full name and while stubbing we stub the global function but while calling it
+// from within the other function, we call the local function. Hence, it is required
+// that all internal and external function calls go through this factory.
+const factory = {
+  handleNewRelease,
+  amountOfShortTerms,
+  handleNewShortTerms,
+  handleNewFlush
+}
+
 module.exports = {
   checkIfNewRelease: checkIfNewRelease,
   amountOfShortTerms,
   handlePotentialNewRelease,
-  handleEmptyCurrentBatch
+  factory
 }
