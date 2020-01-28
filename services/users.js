@@ -5,8 +5,7 @@ const shortTermMailer = require('../services/mail/short-term')
 const generalMailer = require('../services/mail/general')
 const isNotProduction = process.env.NODE_ENV !== 'production'
 
-// let userMatcherBaseUrl = process.env.USER_MATCHER_BASE_URL
-let userMatcherBaseUrl
+let userMatcherBaseUrl = process.env.PROD_BASE_URL
 
 if (isNotProduction) {
   userMatcherBaseUrl = 'http://localhost:8080'
