@@ -1,6 +1,8 @@
+const doNotLog = process.env.NODE_ENV === 'test'
 const separator = '----------------------------------'
 
 const isThisANewRelease = (bool, prev, curr) => {
+  if (doNotLog) return
   console.log(separator)
   if (bool) {
     console.log('The newly scraped object is identical to the previous one')
@@ -12,6 +14,7 @@ const isThisANewRelease = (bool, prev, curr) => {
 }
 
 const handleEmptyCurrentBatch = (prev, curr) => {
+  if (doNotLog) return
   console.log(separator)
   console.log(
     'The CURRENT batch is empty. Either the scraped site is down, or it has slow response times or similar.'
@@ -27,6 +30,7 @@ const handleEmptyCurrentBatch = (prev, curr) => {
 }
 
 const handleEmptyPreviousBatch = (prev, curr) => {
+  if (doNotLog) return
   console.log(separator)
   console.log(
     'The PREVIOUS batch is empty. This usually indicates that the server has restarted because no data was returned from the scraped site'
@@ -37,6 +41,7 @@ const handleEmptyPreviousBatch = (prev, curr) => {
 }
 
 const handleNewRelease = (prev, curr, amountOfShortTerms) => {
+  if (doNotLog) return
   console.log(separator)
   console.log('New apartments have been detected.')
   console.log(
@@ -48,6 +53,7 @@ const handleNewRelease = (prev, curr, amountOfShortTerms) => {
 }
 
 const handleShortTerms = shortTerms => {
+  if (doNotLog) return
   console.log(
     'Between the objects above, the following objects were assessed as short terms: '
   )
@@ -56,6 +62,7 @@ const handleShortTerms = shortTerms => {
 }
 
 const handleNewFlush = () => {
+  if (doNotLog) return
   console.log(
     'Between the objects above, no objects were assessed as short terms. Instead, a whole new flush is presumed. '
   )
@@ -63,6 +70,7 @@ const handleNewFlush = () => {
 }
 
 const logPrevAndCurr = (prev, curr) => {
+  if (doNotLog) return
   console.log(' ')
   console.log('The previous batch:')
   console.log(prev)

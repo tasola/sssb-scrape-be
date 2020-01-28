@@ -1,8 +1,7 @@
 const { arraysOfObjectsAreSame } = require('../utils/utils')
+const { updateApartments } = require('../services/refresh')
+const users = require('./users')
 const log = require('../utils/log')
-
-// TODO: Extract this?
-const mailUtils = require('../utils/mail.js')
 
 const checkIfNewRelease = (prev, curr) => {
   const areArraysIdentical = arraysOfObjectsAreSame(prev, curr)
@@ -51,24 +50,24 @@ const handleEmptyCurrentBatch = (prev, curr) => {
 // up, but new ones have been added without a proper flush). If this is the case, prepare
 // the emailing to subscribers. Else presume that a proper flush has been made.
 const handleNewRelease = (prev, curr) => {
-  let shortTermAmount = amountOfShortTerms(prev, curr)
+  let shortTermAmount = factory.amountOfShortTerms(prev, curr)
   log.handleNewRelease(prev, curr, shortTermAmount)
   if (shortTermAmount > 0) {
-    handleNewShortTerms()
+    factory.handleNewShortTerms(shortTermAmount, curr)
   } else {
-    handleNewFlush(curr)
+    factory.handleNewFlush(curr)
   }
 }
 
-const handleNewShortTerms = () => {
-  const shortTerms = getTheShortTerms(shortTermAmount)
+const handleNewShortTerms = (shortTermAmount, curr) => {
+  const shortTerms = getTheShortTerms(shortTermAmount, curr)
   log.handleShortTerms(shortTerms)
-  mailUtils.sendEmail('shortTerm', shortTerms)
+  users.handleShortTermRelease(shortTerms)
 }
 
 const handleNewFlush = curr => {
   log.handleNewFlush()
-  interestCheck(curr)
+  users.handleGeneralRelease(curr)
 }
 
 // Concatenate the list of previous apartments with the new. Check if any
@@ -88,29 +87,9 @@ const amountOfShortTerms = (prev, curr) => {
   return amountOfShortTerms
 }
 
-const interestCheck = arr => {
-  const apartmentsOfInterest = checkApartmentsOfInterest(arr)
-  const isOfInterest = apartmentsOfInterest.length > 0
-  if (isOfInterest) {
-    console.log('Nya Nypon har kommit - mailar')
-    mailUtils.sendEmail('specific', apartmentsOfInterest)
-  }
-}
-
-const checkApartmentsOfInterest = arr => {
-  let apartments = []
-  arr.forEach(ap => {
-    if (ap.adress.startsWith('Körsbärsvägen 9')) {
-      apartments.push(ap)
-    }
-  })
-  return apartments
-}
-
 // Return an array of the short term apartments. This method assumes that the latest
 // release will be placed at the top of the page (which it has all of 2019)
-const getTheShortTerms = amountOfShortTerms => {
-  console.log('New short term-apartments!')
+const getTheShortTerms = (amountOfShortTerms, curr) => {
   let shortTerms = []
   for (let i = 0; i < amountOfShortTerms; i++) {
     shortTerms.push(curr[i])
@@ -118,6 +97,20 @@ const getTheShortTerms = amountOfShortTerms => {
   return shortTerms
 }
 
+// After compilation the functions are exported with different signatures, with
+// full name and while stubbing we stub the global function but while calling it
+// from within the other function, we call the local function. Hence, it is required
+// that all internal and external function calls go through this factory.
+const factory = {
+  handleNewRelease,
+  amountOfShortTerms,
+  handleNewShortTerms,
+  handleNewFlush
+}
+
 module.exports = {
-  checkIfNewRelease: checkIfNewRelease
+  checkIfNewRelease: checkIfNewRelease,
+  amountOfShortTerms,
+  handlePotentialNewRelease,
+  factory
 }

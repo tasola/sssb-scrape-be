@@ -17,17 +17,20 @@ const objectsAreSame = (x, y) => {
       propertyName !== 'link' &&
       x[propertyName] !== y[propertyName]
     ) {
-      console.log('----')
-      console.log(x[propertyName])
-      console.log('is not equal to')
-      console.log(y[propertyName])
-      console.log('----')
       return false
     }
   }
   return true
 }
 
+const removeLeadingZeroFromString = string => {
+  const _string = string.toString()
+  if (_string.length > 1 && _string[0] === '0') return _string.substr(1)
+  return _string
+}
+
 module.exports = {
-  arraysOfObjectsAreSame: arraysOfObjectsAreSame
+  arraysOfObjectsAreSame: arraysOfObjectsAreSame,
+  objectsAreSame,
+  removeLeadingZeroFromString
 }

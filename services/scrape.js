@@ -33,7 +33,6 @@ const scrapeApartments = async () => {
     }
     return data
   })
-  //console.log(result)
   browser.close()
   return result
 }

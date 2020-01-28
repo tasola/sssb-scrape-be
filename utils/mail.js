@@ -1,5 +1,6 @@
 const nodemailer = require('nodemailer')
 const options = require('./options')
+const doNotLog = process.env.NODE_ENV === 'test'
 require('dotenv').config()
 
 mailConfig = {
@@ -14,21 +15,22 @@ mailConfig = {
 
 let transporter = nodemailer.createTransport(mailConfig)
 
-const send = type => {
+const send = content => {
   if (process.env.NODE_ENV !== 'production') {
-    sendDev(type)
+    sendDev(content)
   } else {
-    sendProd(type)
+    sendProd(content)
   }
 }
 
-const sendDev = type => {
+const sendDev = content => {
+  if (doNotLog) return
   console.log('In prod this mail would have been sent with data:\n ')
-  console.log(type)
+  console.log(content)
 }
 
-const sendProd = type => {
-  transporter.sendMail(type, (error, info) => {
+const sendProd = content => {
+  transporter.sendMail(content, (error, info) => {
     if (error) return console.log(error)
     else console.log('The message was sent')
     console.log(info)
@@ -36,13 +38,16 @@ const sendProd = type => {
   })
 }
 
-const generateContent = (apartments, isShortTerm) => {
+const generateContent = (apartments, recipient, isShortTerm) => {
   let template = options.template
   let content = Object.assign({}, template)
-  const shortTerm = isShortTerm ? 'SHORT TERM' : ''
+  content.to = recipient
+  const shortTerm = isShortTerm ? 'SHORT TERM ' : ''
   if (apartments) {
     const grammar = apartments.length > 1 ? 's' : ''
-    const announcement = `${apartments.length} new ${shortTerm}${apartments[0].area} release${grammar}!`
+    const announcement = `${
+      apartments.length
+    } new ${shortTerm}${getAllUniqueAreas(apartments)} release${grammar}!`
     content.subject = announcement
     content.html = `SSSB just released ${announcement}\n Here's the apartment${grammar}:\n</hr>`
     apartments.forEach(ap => {
@@ -56,33 +61,50 @@ const generateContent = (apartments, isShortTerm) => {
   return content
 }
 
-const generateSpecificContent = apartments => generateContent(apartments, false)
-const generateShortTermContent = apartments => generateContent(apartments, true)
+generateAdminNotification = (usersSubscriptions, adminEmail) => {
+  let template = options.template
+  let content = Object.assign({}, template)
+  const usersObjectKeys = Object.keys(usersSubscriptions)
+  content.to = adminEmail
+  content.subject = 'New batch has been mailed to some users'
+  content.html = 'Here is the object that has been iterated and mailed'
+  usersObjectKeys.forEach(userEmail => {
+    content.html += '<p>Email: ' + userEmail + '</p>'
+    content.html += '<p>Preferences: ' + usersSubscriptions[userEmail] + '</p>'
+    content.html += '<hr>'
+  })
 
-const decideEmail = (role, apartments) => {
-  const { admin, subscriber } = options
-  switch (role) {
-    case 'admin':
-      send(admin)
-      break
-    case 'subscriber':
-      send(subscriber)
-      break
-    case 'specific':
-      const specificContent = generateSpecificContent(apartments)
-      send(specificContent)
-      break
-    case 'shortTerm':
-      const shortTermContent = generateShortTermContent(apartments)
-      send(shortTermContent)
-      break
-    default:
-      send(admin)
-  }
+  return content
 }
 
+// List every unique area name, separated by commas. The last two objects are separated by a '&'
+const getAllUniqueAreas = apartments => {
+  let areas = ''
+  let listedAreas = []
+  apartments.forEach(ap => {
+    if (!listedAreas.includes(ap.area)) {
+      areas += ap.area + ', '
+      listedAreas.push(ap.area)
+    }
+  })
+  areas = areas.substring(0, areas.length - 2)
+  const pos = areas.lastIndexOf(',')
+  if (listedAreas.length > 1)
+    areas = areas.substring(0, pos) + ' &' + areas.substring(pos + 1)
+  return areas
+}
+
+const generateGeneralContent = (apartments, recipient) =>
+  generateContent(apartments, recipient, false)
+
+const generateShortTermContent = (apartments, recipient) =>
+  generateContent(apartments, recipient, true)
+
 module.exports = {
-  sendEmail: (role, apartments) => {
-    decideEmail(role, apartments)
-  }
+  generateContent,
+  getAllUniqueAreas,
+  generateShortTermContent,
+  generateGeneralContent,
+  generateAdminNotification,
+  send
 }
