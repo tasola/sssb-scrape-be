@@ -1,14 +1,20 @@
-var createError = require('http-errors')
-var express = require('express')
-var path = require('path')
-var cookieParser = require('cookie-parser')
-var logger = require('morgan')
-var sassMiddleware = require('node-sass-middleware')
+let isProd = true
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config()
+  isProd = false
+}
 
-var indexRouter = require('./controllers/endpoints')
-const port = 4000
+const createError = require('http-errors')
+const express = require('express')
+const path = require('path')
+const cookieParser = require('cookie-parser')
+const logger = require('morgan')
+const sassMiddleware = require('node-sass-middleware')
+const enforce = require('express-sslify')
 
-var app = express()
+const indexRouter = require('./controllers/endpoints')
+
+const app = express()
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'))
@@ -34,6 +40,10 @@ app.use('/', indexRouter)
 app.use(function(req, res, next) {
   next(createError(404))
 })
+
+if (isProd) {
+  app.use(enforce.HTTPS({ trustProtoHeader: true }))
+}
 
 // error handler
 app.use(function(err, req, res, next) {
