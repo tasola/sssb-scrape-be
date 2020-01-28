@@ -1,5 +1,6 @@
 const mailUtils = require('../../utils/mail')
-const { adminEmails } = require('../../admin-emails')
+
+const adminEmails = process.env.ADMIN_EMAILS.split(',')
 
 const notifyAdmin = usersSubscriptions => {
   adminEmails.forEach(email => {
