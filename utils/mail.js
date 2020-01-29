@@ -70,7 +70,10 @@ generateAdminNotification = (usersSubscriptions, adminEmail) => {
   content.html = 'Here is the object that has been iterated and mailed'
   usersObjectKeys.forEach(userEmail => {
     content.html += '<p>Email: ' + userEmail + '</p>'
-    content.html += '<p>Preferences: ' + usersSubscriptions[userEmail] + '</p>'
+    content.html += '<p>Preferences: </p>'
+    usersSubscriptions[userEmail].forEach(area => {
+      content.html += '<p>' + area.adress + '</p>'
+    })
     content.html += '<hr>'
   })
 

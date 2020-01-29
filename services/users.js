@@ -17,8 +17,8 @@ const handleShortTermRelease = async shortTerms => {
   return usersSubscriptions
 }
 
-const handleGeneralRelease = apartments => {
-  const usersSubscriptions = arrangeUsersSubscriptions(apartments)
+const handleGeneralRelease = async apartments => {
+  const usersSubscriptions = await arrangeUsersSubscriptions(apartments)
   emailSubscribersGeneralRelease(usersSubscriptions)
   return usersSubscriptions
 }
@@ -46,8 +46,12 @@ const arrangeUsersSubscriptions = async shortTerms => {
 // Fetch all subscribers for the given area and floor from the user matcher API
 const getSubscribersFor = async (area, floor) => {
   const endpoint = `${userMatcherBaseUrl}/users/${area}/${floor}`
-  const subscriberEmails = await axios.get(endpoint)
-  return subscriberEmails.data
+  try {
+    const subscriberEmails = await axios.get(endpoint)
+    return subscriberEmails.data
+  } catch (error) {
+    console.error(error)
+  }
 }
 
 // Iterate over the list of emails and add an array of all apartments of interest.

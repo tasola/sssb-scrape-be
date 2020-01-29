@@ -67,6 +67,10 @@ const handleNewFlush = () => {
   console.log(separator)
 }
 
+const emailSubscribers = () => console.log('Emailing subscribers...')
+
+const emailAdmins = () => console.log('Emailing admins...')
+
 const logPrevAndCurr = (prev, curr) => {
   if (doNotLog) return
   console.log(' ')
@@ -93,5 +97,7 @@ module.exports = {
   handleEmptyPreviousBatch,
   handleNewRelease,
   handleShortTerms,
-  handleNewFlush
+  handleNewFlush,
+  emailSubscribers,
+  emailAdmins
 }

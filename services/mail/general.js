@@ -1,7 +1,9 @@
 const mailUtils = require('../../utils/mail')
+const log = require('../../utils/log')
 const admin = require('./admin')
 
 const emailSubscribers = usersSubscriptions => {
+  log.emailSubscribers()
   notifyAdmin(usersSubscriptions)
   Object.keys(usersSubscriptions).forEach(userEmail => {
     const userSpecificSubscriptions = usersSubscriptions[userEmail]
@@ -13,8 +15,6 @@ const emailSubscribers = usersSubscriptions => {
   })
 }
 
-const notifyAdmin = usersSubscriptions => {
-  admin.notifyAdmin(usersSubscriptions)
-}
+const notifyAdmin = usersSubscriptions => admin.notifyAdmin(usersSubscriptions)
 
 module.exports = { emailSubscribers }
