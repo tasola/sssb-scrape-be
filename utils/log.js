@@ -35,7 +35,6 @@ const handleEmptyPreviousBatch = (prev, curr) => {
   console.log(
     'The PREVIOUS batch is empty. This usually indicates that the server has restarted because no data was returned from the scraped site'
   )
-  logPrevAndCurr(prev, curr)
   console.log('No action is taken. Waiting for the next scrape cycle...')
   console.log(separator)
 }
@@ -49,7 +48,6 @@ const handleNewRelease = (prev, curr, amountOfShortTerms) => {
       amountOfShortTerms +
       ' new apartments were found in curr.'
   )
-  logPrevAndCurr(prev, curr)
 }
 
 const handleShortTerms = shortTerms => {
@@ -73,11 +71,20 @@ const logPrevAndCurr = (prev, curr) => {
   if (doNotLog) return
   console.log(' ')
   console.log('The previous batch:')
-  console.log(prev)
+  printAdresses(prev)
   console.log(' ')
   console.log('The current batch:')
-  console.log(curr)
+  printAdresses(curr)
   console.log(' ')
+}
+
+const printAdresses = arrayOfObjects => {
+  let adresses = ''
+  arrayOfObjects.forEach(ap => {
+    adresses += ap.adress + ', '
+  })
+  if (adresses === '') adresses = '[empty]'
+  console.log(adresses)
 }
 
 module.exports = {
