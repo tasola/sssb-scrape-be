@@ -1,15 +1,25 @@
 const { scrapeApartments } = require('./scrape')
 const { checkIfNewRelease } = require('./analyze')
 
+// The server restarts one every 24h. When this happens the server's prev is
+// empty, and the first scrape is always interpreted as a new release. Count
+// the servers scrapes and ignore that first case when prev is empty.
+let refreshCounter = 0
+let doEmail = false
+
 let savedApartments = []
 const refreshTimer =
-  process.env.NODE_ENV !== 'production' ? 1000 * 30 : 1000 * 60 * 5
+  process.env.NODE_ENV !== 'production' ? 1000 * 10 : 1000 * 60 * 5
 
 const updateApartments = () => {
-  const result = scrapeApartments().then(apartments => {
-    savedApartments = checkIfNewRelease(savedApartments, apartments)
-    return apartments
-  })
+  refreshCounter++
+  doEmail = refreshCounter > 1
+  const result = scrapeApartments()
+    .then(apartments => {
+      savedApartments = checkIfNewRelease(savedApartments, apartments, doEmail)
+      return apartments
+    })
+    .catch(err => console.error('Error in updateApartments', err))
   return result
 }
 

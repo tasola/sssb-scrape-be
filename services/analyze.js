@@ -3,7 +3,13 @@ const { updateApartments } = require('../services/refresh')
 const users = require('./users')
 const log = require('../utils/log')
 
-const checkIfNewRelease = (prev, curr) => {
+// The first time updateApartments is called (which in turns calls this function),
+// prev is always empty. Jump out of the loop immediately when this happens.
+const checkIfNewRelease = (prev, curr, doEmail) => {
+  if (!doEmail) {
+    log.serverRestart()
+    return curr
+  }
   const areArraysIdentical = arraysOfObjectsAreSame(prev, curr)
   log.isThisANewRelease(areArraysIdentical, prev, curr)
   if (!areArraysIdentical) {
@@ -19,9 +25,45 @@ const handlePotentialNewRelease = (prev, curr) => {
   if (curr.length === 0) {
     return handleEmptyCurrentBatch(prev, curr)
   } else {
-    handleNewRelease(prev, curr)
+    handleBatchChange(prev, curr)
   }
   return curr
+}
+
+// Analyze previous and curr. If an id only occurs once in the arrays, it potentially is
+// a new release. However, if that one hit was found in the prev array it indicates that
+// that apartment simply was removed - hence no announcement is needed. If the hit is in
+// curr however, there is a new apartment. At this stage it is impossible to differ a
+// short-term release to an ordinary release with some re-releases. Right now (2020-02-01)
+// it is presumed that if the matching subsets are longer than 3, it is a re-release, else
+//it is a short-term. This should however be updated later, as it is not bullet proof.
+const handleBatchChange = (prev, curr) => {
+  const idHitsDict = countIdHits(prev, curr)
+  let hasOnlySoloHits = true
+  let amountOfNewApartments = 0
+
+  for (let apartment in idHitsDict) {
+    if (idHitsDict[apartment]['hits'] === 1) {
+      if (idHitsDict[apartment]['indexes'][0] >= prev.length) {
+        amountOfNewApartments++
+      }
+    } else {
+      hasOnlySoloHits = false
+    }
+  }
+
+  if (
+    !hasOnlySoloHits &&
+    amountOfNewApartments < 4 &&
+    amountOfNewApartments > 0
+  ) {
+    let shortTermAmount = factory.amountOfShortTerms(idHitsDict)
+    log.handleNewRelease(prev, curr, shortTermAmount)
+    factory.handleNewShortTerms(shortTermAmount, curr)
+    return
+  }
+
+  if (amountOfNewApartments > 0) factory.handleNewFlush(curr)
 }
 
 // If zero apartments are in prev, it usually means that the scraper has restarted the
@@ -71,20 +113,34 @@ const handleNewFlush = curr => {
 }
 
 // Concatenate the list of previous apartments with the new. Check if any
-// object's id matches. In that case some short term apartment(s) has been released.
-const amountOfShortTerms = (prev, curr) => {
+// object's id matches. In the case that some id's don't match -
+// some short term apartment(s) has been released.
+const amountOfShortTerms = idHitsDict => {
   let amountOfShortTerms = 0
-  occurances = {}
-  prevAndCurr = prev.concat(curr)
-  prevAndCurr.map(obj => {
-    occurances[obj.id] = occurances[obj.id] ? occurances[obj.id] + 1 : 1
-  })
-  for (let attr in occurances) {
-    if (occurances[attr] !== 1) {
+  for (let attr in idHitsDict) {
+    if (idHitsDict[attr]['hits'] === 1) {
       amountOfShortTerms++
     }
   }
   return amountOfShortTerms
+}
+
+// TODO: Write tests. Test that an obj with 1 hit also only have length 1 on indexes
+const countIdHits = (prev, curr) => {
+  prevAndCurr = prev.concat(curr)
+  occurances = {}
+  prevAndCurr.forEach((obj, index) => {
+    if (occurances[obj.id] && occurances[obj.id]['hits']) {
+      occurances[obj.id]['hits'] += 1
+      occurances[obj.id]['indexes'].push(index)
+    } else {
+      occurances[obj.id] = {
+        hits: 1,
+        indexes: [index]
+      }
+    }
+  })
+  return occurances
 }
 
 // Return an array of the short term apartments. This method assumes that the latest
@@ -112,5 +168,7 @@ module.exports = {
   checkIfNewRelease: checkIfNewRelease,
   amountOfShortTerms,
   handlePotentialNewRelease,
+  countIdHits,
+  handleBatchChange,
   factory
 }

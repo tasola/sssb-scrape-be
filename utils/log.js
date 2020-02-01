@@ -13,6 +13,11 @@ const isThisANewRelease = (bool, prev, curr) => {
   console.log(separator)
 }
 
+const serverRestart = () => {
+  if (doNotLog) return
+  console.log('The server seems to have restarted')
+}
+
 const handleEmptyCurrentBatch = (prev, curr) => {
   if (doNotLog) return
   console.log(separator)
@@ -99,5 +104,6 @@ module.exports = {
   handleShortTerms,
   handleNewFlush,
   emailSubscribers,
-  emailAdmins
+  emailAdmins,
+  serverRestart
 }
