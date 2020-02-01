@@ -28,7 +28,7 @@ describe('analyze', () => {
   })
 
   describe('handleBatchChange()', () => {
-    it('should call handleNewShortTerms once', async () => {
+    it('should call handleNewShortTerms once', () => {
       const handleNewShortTermsStub = sinon
         .stub(analyze.factory, 'handleNewShortTerms')
         .returns(1)
@@ -36,7 +36,7 @@ describe('analyze', () => {
       handleNewShortTermsStub.callCount.should.equal(1)
     })
 
-    it('should not call handleNewFlush', async () => {
+    it('should not call handleNewFlush, as a short-term was released', () => {
       const handleNewFlushStub = sinon
         .stub(analyze.factory, 'handleNewFlush')
         .returns(1)
@@ -44,12 +44,28 @@ describe('analyze', () => {
       handleNewFlushStub.callCount.should.equal(0)
     })
 
-    it('should call handleNewFlush because of a new release with one re-release', async () => {
+    it('should call handleNewFlush because of a new release with one re-release', () => {
       const handleNewFlushStub = sinon
         .stub(analyze.factory, 'handleNewFlush')
         .returns(1)
       analyze.handleBatchChange(prev, newReleaseWithARerelease)
       handleNewFlushStub.callCount.should.equal(1)
+    })
+
+    it('should not call handleNewFlush because of the one drop-off', () => {
+      const handleNewFlushStub = sinon
+        .stub(analyze.factory, 'handleNewFlush')
+        .returns(1)
+      analyze.handleBatchChange(curr, currWithOneDropoff)
+      handleNewFlushStub.callCount.should.equal(0)
+    })
+
+    it('should not call handleNewShortTerms because of the one drop-off', () => {
+      const handleNewShortTermsStub = sinon
+        .stub(analyze.factory, 'handleNewShortTerms')
+        .returns(1)
+      analyze.handleBatchChange(curr, currWithOneDropoff)
+      handleNewShortTermsStub.callCount.should.equal(0)
     })
   })
 
@@ -131,6 +147,23 @@ const curr = [
   }
 ]
 
+const currWithOneDropoff = [
+  {
+    area: 'Nyponet',
+    floor: '18',
+    adress: '0823-2102-2122',
+    id: '0823-2102-2122',
+    link: 'www.nyponet1.se'
+  },
+  {
+    area: 'Nyponet',
+    floor: '05',
+    adress: '0823-9823-2122',
+    id: '0823-9823-2122',
+    link: 'www.nyponet2.se'
+  }
+]
+
 const newReleaseWithARerelease = [
   {
     area: 'Nyponet',
@@ -143,28 +176,28 @@ const newReleaseWithARerelease = [
     area: 'Nyponet',
     floor: '05',
     adress: '0823-6124-2122',
-    id: '0823-9823-2122',
+    id: '0823-6124-2122',
     link: 'www.nyponet2.se'
   },
   {
     area: 'Jerum',
     floor: '01',
     adress: '0823-0192-2122',
-    id: '0823-1010-2122',
+    id: '0823-0192-2122',
     link: 'www.kungshamra1.se'
   },
   {
     area: 'Kungshamra',
     floor: '01',
     adress: '0823-1234-2122',
-    id: '0823-1010-2122',
+    id: '0823-1234-2122',
     link: 'www.kungshamra1.se'
   },
   {
     area: 'Kungshamra',
     floor: '01',
     adress: '0823-6534-2122',
-    id: '0823-1010-2122',
+    id: '0823-6534-2122',
     link: 'www.kungshamra1.se'
   }
 ]

@@ -27,8 +27,13 @@ const handlePotentialNewRelease = (prev, curr) => {
   return curr
 }
 
-// Odd cases: (New release, with one object being a re-release), (expiration and short term
-// release simultaneously)
+// Analyze previous and curr. If an id only occurs once in the arrays, it potentially is
+// a new release. However, if that one hit was found in the prev array it indicates that
+// that apartment simply was removed - hence no announcement is needed. If the hit is in
+// curr however, there is a new apartment. At this stage it is impossible to differ a
+// short-term release to an ordinary release with some re-releases. Right now (2020-02-01)
+// it is presumed that if the matching subsets are longer than 3, it is a re-release, else
+//it is a short-term. This should however be updated later, as it is not bullet proof.
 const handleBatchChange = (prev, curr) => {
   const idHitsDict = countIdHits(prev, curr)
   let hasOnlySoloHits = true
@@ -43,20 +48,19 @@ const handleBatchChange = (prev, curr) => {
       hasOnlySoloHits = false
     }
   }
-  console.log('----------')
-  console.log(amountOfNewApartments)
-  console.log(hasOnlySoloHits)
-  console.log(curr[2].area)
-  console.log('----------')
 
-  if (!hasOnlySoloHits && amountOfNewApartments < 4) {
+  if (
+    !hasOnlySoloHits &&
+    amountOfNewApartments < 4 &&
+    amountOfNewApartments > 0
+  ) {
     let shortTermAmount = factory.amountOfShortTerms(idHitsDict)
     log.handleNewRelease(prev, curr, shortTermAmount)
     factory.handleNewShortTerms(shortTermAmount, curr)
     return
   }
 
-  factory.handleNewFlush(curr)
+  if (amountOfNewApartments > 0) factory.handleNewFlush(curr)
 }
 
 // If zero apartments are in prev, it usually means that the scraper has restarted the
