@@ -3,7 +3,13 @@ const { updateApartments } = require('../services/refresh')
 const users = require('./users')
 const log = require('../utils/log')
 
-const checkIfNewRelease = (prev, curr) => {
+// The first time updateApartments is called (which in turns calls this function),
+// prev is always empty. Jump out of the loop immediately when this happens.
+const checkIfNewRelease = (prev, curr, doEmail) => {
+  if (!doEmail) {
+    log.serverRestart()
+    return curr
+  }
   const areArraysIdentical = arraysOfObjectsAreSame(prev, curr)
   log.isThisANewRelease(areArraysIdentical, prev, curr)
   if (!areArraysIdentical) {
@@ -12,9 +18,6 @@ const checkIfNewRelease = (prev, curr) => {
   return curr
 }
 
-// TODO: If a subset of prev ended this function handles the drop from (for example)
-// 91 to 89 apartments (where all 89 were in prev) as a new release. Add logic that
-// handles this.
 const handlePotentialNewRelease = (prev, curr) => {
   if (prev.length === 0) {
     handleEmptyPreviousBatch(prev, curr)
