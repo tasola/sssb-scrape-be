@@ -199,5 +199,19 @@ const newReleaseWithARerelease = [
     adress: '0823-6534-2122',
     id: '0823-6534-2122',
     link: 'www.kungshamra1.se'
+  },
+  {
+    area: 'Kungshamra',
+    floor: '08',
+    adress: '0823-2319-2122',
+    id: '0823-2319-2122',
+    link: 'www.kungshamra1.se'
+  },
+  {
+    area: 'Nyponet',
+    floor: '05',
+    adress: '0823-0982-2122',
+    id: '0823-0982-2122',
+    link: 'www.nyponet2.se'
   }
 ]

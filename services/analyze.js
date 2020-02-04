@@ -35,8 +35,8 @@ const handlePotentialNewRelease = (prev, curr) => {
 // that apartment simply was removed - hence no announcement is needed. If the hit is in
 // curr however, there is a new apartment. At this stage it is impossible to differ a
 // short-term release to an ordinary release with some re-releases. Right now (2020-02-01)
-// it is presumed that if the matching subsets are longer than 3, it is a re-release, else
-//it is a short-term. This should however be updated later, as it is not bullet proof.
+// it is presumed that if the matching subsets are longer than 5, it is a re-release, else
+// it is a short-term. This should however be updated later, as it is not bullet proof.
 const handleBatchChange = (prev, curr) => {
   const idHitsDict = countIdHits(prev, curr)
   let hasOnlySoloHits = true
@@ -54,7 +54,7 @@ const handleBatchChange = (prev, curr) => {
 
   if (
     !hasOnlySoloHits &&
-    amountOfNewApartments < 4 &&
+    amountOfNewApartments < 6 &&
     amountOfNewApartments > 0
   ) {
     let shortTermAmount = factory.amountOfShortTerms(idHitsDict)
