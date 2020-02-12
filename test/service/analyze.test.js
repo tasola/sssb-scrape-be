@@ -109,14 +109,14 @@ describe('analyze', () => {
 const prev = [
   {
     area: 'Nyponet',
-    floor: '18',
+    type: 'Lägenhet 2 rum & kök',
     adress: '0823-2102-2122',
     id: '0823-2102-2122',
     link: 'www.nyponet1.se'
   },
   {
     area: 'Kungshamra',
-    floor: '01',
+    type: 'Ett rum med pentry',
     adress: '0823-1010-2122',
     id: '0823-1010-2122',
     link: 'www.kungshamra1.se'
@@ -126,21 +126,21 @@ const prev = [
 const curr = [
   {
     area: 'Nyponet',
-    floor: '18',
+    type: 'Lägenhet 2 rum & kök',
     adress: '0823-2102-2122',
     id: '0823-2102-2122',
     link: 'www.nyponet1.se'
   },
   {
     area: 'Nyponet',
-    floor: '05',
+    type: 'Lägenhet 3 rum & kök',
     adress: '0823-9823-2122',
     id: '0823-9823-2122',
     link: 'www.nyponet2.se'
   },
   {
     area: 'Kungshamra',
-    floor: '01',
+    type: 'Ett rum med pentry',
     adress: '0823-1010-2122',
     id: '0823-1010-2122',
     link: 'www.kungshamra1.se'
@@ -150,14 +150,14 @@ const curr = [
 const currWithOneDropoff = [
   {
     area: 'Nyponet',
-    floor: '18',
+    type: 'Lägenhet 2 rum & kök',
     adress: '0823-2102-2122',
     id: '0823-2102-2122',
     link: 'www.nyponet1.se'
   },
   {
     area: 'Nyponet',
-    floor: '05',
+    type: 'Lägenhet 3 rum & kök',
     adress: '0823-9823-2122',
     id: '0823-9823-2122',
     link: 'www.nyponet2.se'
@@ -167,49 +167,49 @@ const currWithOneDropoff = [
 const newReleaseWithARerelease = [
   {
     area: 'Nyponet',
-    floor: '18',
+    type: 'Lägenhet 2 rum & kök',
     adress: '0823-2102-2122',
     id: '0823-2102-2122',
     link: 'www.nyponet1.se'
   },
   {
     area: 'Nyponet',
-    floor: '05',
+    type: 'Lägenhet 3 rum & kök',
     adress: '0823-6124-2122',
     id: '0823-6124-2122',
     link: 'www.nyponet2.se'
   },
   {
     area: 'Jerum',
-    floor: '01',
+    type: 'Ett rum med pentry',
     adress: '0823-0192-2122',
     id: '0823-0192-2122',
     link: 'www.kungshamra1.se'
   },
   {
     area: 'Kungshamra',
-    floor: '01',
+    type: 'Ett rum med pentry',
     adress: '0823-1234-2122',
     id: '0823-1234-2122',
     link: 'www.kungshamra1.se'
   },
   {
     area: 'Kungshamra',
-    floor: '01',
+    type: 'Ett rum med pentry',
     adress: '0823-6534-2122',
     id: '0823-6534-2122',
     link: 'www.kungshamra1.se'
   },
   {
     area: 'Kungshamra',
-    floor: '08',
+    type: 'Ett rum med pentry',
     adress: '0823-2319-2122',
     id: '0823-2319-2122',
     link: 'www.kungshamra1.se'
   },
   {
     area: 'Nyponet',
-    floor: '05',
+    type: 'Lägenhet 1 rum & kök',
     adress: '0823-0982-2122',
     id: '0823-0982-2122',
     link: 'www.nyponet2.se'

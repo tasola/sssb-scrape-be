@@ -24,7 +24,6 @@ const scrapeApartments = async () => {
         adress: primaryData[i].childNodes[0].text,
         id: metaData[0 + i * 6].innerHTML,
         area: areaData[i].innerHTML,
-        floor: metaData[0 + i * 6].innerHTML.substring(7, 9),
         squareMeters: metaData[2 + i * 6].innerHTML,
         rent: metaData[3 + i * 6].innerHTML.replace(/&nbsp;/gi, ''),
         moveIn: metaData[4 + i * 6].innerHTML,
