@@ -1,6 +1,7 @@
 var axios = require('axios')
 
 const { removeLeadingZeroFromString } = require('../utils/utils')
+const { getApartmentType } = require('../utils/types')
 const shortTermMailer = require('../services/mail/short-term')
 const generalMailer = require('../services/mail/general')
 const isNotProduction = process.env.NODE_ENV !== 'production'
@@ -29,10 +30,11 @@ const arrangeUsersSubscriptions = async shortTerms => {
   let usersSubscriptions = {}
   for (let i = 0; i < shortTerms.length; i++) {
     const apartment = shortTerms[i]
-    const { area, floor } = apartment
+    const { area, floor, type } = apartment
     const subscriberEmails = await getSubscribersFor(
       area,
-      removeLeadingZeroFromString(floor)
+      removeLeadingZeroFromString(floor),
+      getApartmentType(type)
     )
     usersSubscriptions = updateUsersSubscriptions(
       usersSubscriptions,
@@ -44,8 +46,8 @@ const arrangeUsersSubscriptions = async shortTerms => {
 }
 
 // Fetch all subscribers for the given area and floor from the user matcher API
-const getSubscribersFor = async (area, floor) => {
-  const endpoint = `${userMatcherBaseUrl}/users/${area}/${floor}`
+const getSubscribersFor = async (area, floor, type) => {
+  const endpoint = `${userMatcherBaseUrl}/users/${area}/${type}/${floor}`
   try {
     const subscriberEmails = await axios.get(endpoint)
     return subscriberEmails.data
