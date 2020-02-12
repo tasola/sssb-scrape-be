@@ -4,7 +4,9 @@ const { checkIfNewRelease } = require('./analyze')
 // The server restarts one every 24h. When this happens the server's prev is
 // empty, and the first scrape is always interpreted as a new release. Count
 // the servers scrapes and ignore that first case when prev is empty.
-let refreshCounter = 0
+// This variable is set to 1 in order to trigger a mailing action on a local
+// environment for testing purposes.
+let refreshCounter = process.env.NODE_ENV !== 'production' ? 1 : 0
 let doEmail = false
 
 let savedApartments = []

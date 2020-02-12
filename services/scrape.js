@@ -16,6 +16,7 @@ const scrapeApartments = async () => {
     let data = []
     const primaryData = document.querySelectorAll('.ObjektAdress')
     const objectLink = document.querySelectorAll('.ObjektAdress > a')
+    const type = document.querySelectorAll('.ObjektTyp > a')
     const metaData = document.querySelectorAll('.ObjektDetaljer > dl > dd')
     const areaData = document.querySelectorAll('.ObjektDetaljer > dl > dd > a')
     for (let i = 0; i < primaryData.length; i++) {
@@ -28,6 +29,7 @@ const scrapeApartments = async () => {
         rent: metaData[3 + i * 6].innerHTML.replace(/&nbsp;/gi, ''),
         moveIn: metaData[4 + i * 6].innerHTML,
         queue: metaData[5 + i * 6].innerHTML,
+        type: type[i].innerHTML,
         link: objectLink[i].href
       })
     }
