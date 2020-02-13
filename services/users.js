@@ -1,6 +1,9 @@
 var axios = require('axios')
 
-const { removeLeadingZeroFromString } = require('../utils/utils')
+const {
+  removeLeadingZeroFromString,
+  getFloorFromAdress
+} = require('../utils/utils')
 const { getApartmentType } = require('../utils/types')
 const shortTermMailer = require('../services/mail/short-term')
 const generalMailer = require('../services/mail/general')
@@ -30,7 +33,8 @@ const arrangeUsersSubscriptions = async shortTerms => {
   let usersSubscriptions = {}
   for (let i = 0; i < shortTerms.length; i++) {
     const apartment = shortTerms[i]
-    const { area, floor, type } = apartment
+    const { adress, area, type } = apartment
+    const floor = getFloorFromAdress(adress, area)
     const subscriberEmails = await getSubscribersFor(
       area,
       removeLeadingZeroFromString(floor),

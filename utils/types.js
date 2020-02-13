@@ -1,20 +1,23 @@
+const { decodeEntities } = require('./utils')
+
 const getApartmentType = typeTitle => {
-  switch (typeTitle) {
-    case 'Enkelrum, (rum i korridor)':
-      return 'dorm'
-    case 'Ett rum med pentry':
-      return 'room'
-    case 'Lägenhet 1 rum & kök' ||
-      'Lägenhet 2 rum & kök' ||
-      'Lägenhet 3 rum & kök' ||
-      'Lägenhet 4 rum & kök':
-      return 'apartment'
-    case 'Lägenhet 2 rum & pentry' ||
-      'Lägenhet 3 rum & pentry' ||
-      'Lägenhet 4 rum & pentry':
-      return 'apartment'
-    default:
-      return ''
+  typeTitle = decodeEntities(typeTitle)
+  if (typeTitle === 'Enkelrum, (rum i korridor)') {
+    return 'dorm'
+  } else if (typeTitle === 'Ett rum med pentry') {
+    return 'room'
+  } else if (
+    typeTitle === 'Lägenhet 1 rum & kök' ||
+    typeTitle === 'Lägenhet 2 rum & kök' ||
+    typeTitle === 'Lägenhet 3 rum & kök' ||
+    typeTitle === 'Lägenhet 4 rum & kök' ||
+    typeTitle === 'Lägenhet 2 rum & pentry' ||
+    typeTitle === 'Lägenhet 3 rum & pentry' ||
+    typeTitle === 'Lägenhet 4 rum & pentry'
+  ) {
+    return 'apartment'
+  } else {
+    return 'odd'
   }
 }
 
