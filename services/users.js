@@ -35,6 +35,7 @@ const arrangeUsersSubscriptions = async shortTerms => {
     const apartment = shortTerms[i]
     const { adress, area, type } = apartment
     const floor = getFloorFromAdress(adress, area)
+    apartment['floor'] = floor
     const subscriberEmails = await getSubscribersFor(
       area,
       removeLeadingZeroFromString(floor),
