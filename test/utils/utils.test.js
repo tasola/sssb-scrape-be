@@ -111,6 +111,39 @@ describe('utils', () => {
     })
   })
 
+  describe('getFloorFromAdress()', () => {
+    it('should return "2"', () => {
+      const adress = 'Kungshamra 3, 1227'
+      const result = utils.getFloorFromAdress(adress, 'Kungshamra')
+      result.should.equal('2')
+    })
+    it('should return "0"', () => {
+      const adress = 'Professorslingan 4, 1011'
+      const result = utils.getFloorFromAdress(adress, 'Lappkärrsberget')
+      result.should.equal('0')
+    })
+    it('should return "10"', () => {
+      const adress = 'Professorslingan 4, 2015'
+      const result = utils.getFloorFromAdress(adress, 'Lappkärrsberget')
+      result.should.equal('10')
+    })
+    it('should return "22"', () => {
+      const adress = 'Professorslingan 4, 3202'
+      const result = utils.getFloorFromAdress(adress, 'Lappkärrsberget')
+      result.should.equal('22')
+    })
+    it('should return "10" for special case Nyponet', () => {
+      const adress = 'Körsbärsvägen 9, 1602'
+      const result = utils.getFloorFromAdress(adress, 'Nyponet')
+      result.should.equal('10')
+    })
+    it('should return "18" for special case Nyponet', () => {
+      const adress = 'Körsbärsvägen 9, 2403'
+      const result = utils.getFloorFromAdress(adress, 'Nyponet')
+      result.should.equal('18')
+    })
+  })
+
   describe('removeLeadingZeroFromString()', () => {
     it('should return "0"', () => {
       const floor = '0'
