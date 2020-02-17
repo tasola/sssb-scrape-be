@@ -115,6 +115,13 @@ const prev = [
     link: 'www.nyponet1.se'
   },
   {
+    area: 'Jerum',
+    type: 'Ett rum med pentry',
+    adress: '0823-0192-2122',
+    id: '0823-0192-2122',
+    link: 'www.kungshamra1.se'
+  },
+  {
     area: 'Kungshamra',
     type: 'Ett rum med pentry',
     adress: '0823-1010-2122',
@@ -130,6 +137,13 @@ const curr = [
     adress: '0823-2102-2122',
     id: '0823-2102-2122',
     link: 'www.nyponet1.se'
+  },
+  {
+    area: 'Jerum',
+    type: 'Ett rum med pentry',
+    adress: '0823-0192-2122',
+    id: '0823-0192-2122',
+    link: 'www.kungshamra1.se'
   },
   {
     area: 'Nyponet',
