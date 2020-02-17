@@ -11,10 +11,12 @@ const cookieParser = require('cookie-parser')
 const logger = require('morgan')
 const sassMiddleware = require('node-sass-middleware')
 const enforce = require('express-sslify')
+const rateLimit = require('express-rate-limit')
 
 const indexRouter = require('./controllers/endpoints')
 
 const app = express()
+const limiter = rateLimit({ windowMs: 20 * 60 * 1000, max: 10 })
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'))
@@ -33,6 +35,7 @@ app.use(
   })
 )
 app.use(express.static(path.join(__dirname, 'public')))
+app.use(limiter)
 
 app.use('/', indexRouter)
 
