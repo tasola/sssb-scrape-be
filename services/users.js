@@ -2,7 +2,7 @@ var axios = require('axios')
 
 const {
   removeLeadingZeroFromString,
-  getFloorFromAdress
+  getFloorFromAdress,
 } = require('../utils/utils')
 const { getApartmentType } = require('../utils/types')
 const shortTermMailer = require('../services/mail/short-term')
@@ -15,13 +15,13 @@ if (isNotProduction) {
   userMatcherBaseUrl = 'http://localhost:8080'
 }
 
-const handleShortTermRelease = async shortTerms => {
+const handleShortTermRelease = async (shortTerms) => {
   const usersSubscriptions = arrangeUsersSubscriptions(shortTerms)
   factory.emailSubscribersShortTermRelease(usersSubscriptions)
   return usersSubscriptions
 }
 
-const handleGeneralRelease = async apartments => {
+const handleGeneralRelease = async (apartments) => {
   const usersSubscriptions = await arrangeUsersSubscriptions(apartments)
   emailSubscribersGeneralRelease(usersSubscriptions)
   return usersSubscriptions
@@ -29,7 +29,7 @@ const handleGeneralRelease = async apartments => {
 
 // Iterate over the list of new short term releases and arrange an object of
 // all subscribers with their respective short term releases of interest
-const arrangeUsersSubscriptions = async shortTerms => {
+const arrangeUsersSubscriptions = async (shortTerms) => {
   let usersSubscriptions = {}
   for (let i = 0; i < shortTerms.length; i++) {
     const apartment = shortTerms[i]
@@ -73,20 +73,20 @@ const updateUsersSubscriptions = (
   subscriberEmails,
   apartment
 ) => {
-  subscriberEmails.forEach(email => {
+  subscriberEmails.forEach((email) => {
     if (usersSubscriptions[email] === undefined) {
       usersSubscriptions[email] = [apartment]
-    } else {
+    } else if (usersSubscriptions[email] !== null) {
       usersSubscriptions[email].push(apartment)
     }
   })
   return usersSubscriptions
 }
 
-const emailSubscribersShortTermRelease = usersSubscriptions =>
+const emailSubscribersShortTermRelease = (usersSubscriptions) =>
   shortTermMailer.emailSubscribers(usersSubscriptions)
 
-const emailSubscribersGeneralRelease = usersSubscriptions =>
+const emailSubscribersGeneralRelease = (usersSubscriptions) =>
   generalMailer.emailSubscribers(usersSubscriptions)
 
 // After compilation the functions are exported with different signatures, with
@@ -94,7 +94,7 @@ const emailSubscribersGeneralRelease = usersSubscriptions =>
 // from within the other function, we call the local function. Hence, it is required
 // that all internal and external function calls go through this factory.
 const factory = {
-  emailSubscribersShortTermRelease
+  emailSubscribersShortTermRelease,
 }
 
 module.exports = {
@@ -103,5 +103,5 @@ module.exports = {
   arrangeUsersSubscriptions,
   updateUsersSubscriptions,
   getSubscribersFor,
-  factory
+  factory,
 }
