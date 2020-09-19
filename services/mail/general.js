@@ -1,11 +1,11 @@
-const mailUtils = require('../../utils/mail')
-const log = require('../../utils/log')
+const mailUtils = require('../../utils/mail/mail')
+const log = require('../../utils/log/log')
 const admin = require('./admin')
 
-const emailSubscribers = usersSubscriptions => {
+const emailSubscribers = (usersSubscriptions) => {
   log.emailSubscribers()
   notifyAdmin(usersSubscriptions)
-  Object.keys(usersSubscriptions).forEach(userEmail => {
+  Object.keys(usersSubscriptions).forEach((userEmail) => {
     const userSpecificSubscriptions = usersSubscriptions[userEmail]
     const generatedUserMail = mailUtils.generateGeneralContent(
       userSpecificSubscriptions,
@@ -15,6 +15,7 @@ const emailSubscribers = usersSubscriptions => {
   })
 }
 
-const notifyAdmin = usersSubscriptions => admin.notifyAdmin(usersSubscriptions)
+const notifyAdmin = (usersSubscriptions) =>
+  admin.notifyAdmin(usersSubscriptions)
 
 module.exports = { emailSubscribers }

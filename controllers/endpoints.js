@@ -1,8 +1,8 @@
 const express = require('express')
 const router = express.Router()
 const { updateApartments, timedUpdate } = require('../services/refresh')
-const { asyncMiddleware } = require('../utils/middleware')
-const { pingHeroku } = require('../utils/ping')
+const { asyncMiddleware } = require('../utils/server-config/middleware')
+const { pingHeroku } = require('../utils/server-config/ping')
 
 timedUpdate()
 pingHeroku()

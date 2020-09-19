@@ -1,9 +1,9 @@
-const mailUtils = require('../../utils/mail')
+const mailUtils = require('../../utils/mail/mail')
 const admin = require('./admin')
 
-const emailSubscribers = usersSubscriptions => {
+const emailSubscribers = (usersSubscriptions) => {
   notifyAdmin(usersSubscriptions)
-  Object.keys(usersSubscriptions).forEach(userEmail => {
+  Object.keys(usersSubscriptions).forEach((userEmail) => {
     const userSpecificSubscriptions = usersSubscriptions[userEmail]
     const generatedUserMail = mailUtils.generateShortTermContent(
       userSpecificSubscriptions,
@@ -13,7 +13,7 @@ const emailSubscribers = usersSubscriptions => {
   })
 }
 
-const notifyAdmin = usersSubscriptions => {
+const notifyAdmin = (usersSubscriptions) => {
   admin.notifyAdmin(usersSubscriptions)
 }
 
