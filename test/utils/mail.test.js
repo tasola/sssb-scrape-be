@@ -1,4 +1,4 @@
-const mail = require('../../utils/mail')
+const mail = require('../../utils/mail/mail')
 
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config()
@@ -16,20 +16,20 @@ describe('mail', () => {
       area: 'Nyponet',
       floor: '18',
       adress: '0823-2102-2122',
-      link: 'www.nyponet1.se'
+      link: 'www.nyponet1.se',
     },
     {
       area: 'Nyponet',
       floor: '05',
       adress: '0823-9823-2122',
-      link: 'www.nyponet2.se'
+      link: 'www.nyponet2.se',
     },
     {
       area: 'Kungshamra',
       floor: '01',
       adress: '0823-1010-2122',
-      link: 'www.kungshamra1.se'
-    }
+      link: 'www.kungshamra1.se',
+    },
   ]
 
   // Says that there are 3 new nyponet releases although there only are two. Expected, but TODO
@@ -38,7 +38,7 @@ describe('mail', () => {
     to: 'mail1@mail.com',
     subject: '3 new Nyponet & Kungshamra releases!',
     text: '',
-    html: `SSSB just released 3 new Nyponet & Kungshamra releases!\n Here\'s the apartments:\n</hr><p>Area: Nyponet</p><p>Floor: 18</p><p>Apartment number: 2122</p><p>Book it <a href=\'www.nyponet1.se\'> here <a/></p><hr><p>Area: Nyponet</p><p>Floor: 05</p><p>Apartment number: 2122</p><p>Book it <a href=\'www.nyponet2.se\'> here <a/></p><hr><p>Area: Kungshamra</p><p>Floor: 01</p><p>Apartment number: 2122</p><p>Book it <a href=\'www.kungshamra1.se\'> here <a/></p><hr>`
+    html: `SSSB just released 3 new Nyponet & Kungshamra releases!\n Here\'s the apartments:\n</hr><p>Area: Nyponet</p><p>Floor: 18</p><p>Apartment number: 2122</p><p>Book it <a href=\'www.nyponet1.se\'> here <a/></p><hr><p>Area: Nyponet</p><p>Floor: 05</p><p>Apartment number: 2122</p><p>Book it <a href=\'www.nyponet2.se\'> here <a/></p><hr><p>Area: Kungshamra</p><p>Floor: 01</p><p>Apartment number: 2122</p><p>Book it <a href=\'www.kungshamra1.se\'> here <a/></p><hr>`,
   }
 
   const correctShortTermEmail = {
@@ -46,7 +46,7 @@ describe('mail', () => {
     to: 'mail1@mail.com',
     subject: '3 new SHORT TERM Nyponet & Kungshamra releases!',
     text: '',
-    html: `SSSB just released 3 new SHORT TERM Nyponet & Kungshamra releases!\n Here\'s the apartments:\n</hr><p>Area: Nyponet</p><p>Floor: 18</p><p>Apartment number: 2122</p><p>Book it <a href=\'www.nyponet1.se\'> here <a/></p><hr><p>Area: Nyponet</p><p>Floor: 05</p><p>Apartment number: 2122</p><p>Book it <a href=\'www.nyponet2.se\'> here <a/></p><hr><p>Area: Kungshamra</p><p>Floor: 01</p><p>Apartment number: 2122</p><p>Book it <a href=\'www.kungshamra1.se\'> here <a/></p><hr>`
+    html: `SSSB just released 3 new SHORT TERM Nyponet & Kungshamra releases!\n Here\'s the apartments:\n</hr><p>Area: Nyponet</p><p>Floor: 18</p><p>Apartment number: 2122</p><p>Book it <a href=\'www.nyponet1.se\'> here <a/></p><hr><p>Area: Nyponet</p><p>Floor: 05</p><p>Apartment number: 2122</p><p>Book it <a href=\'www.nyponet2.se\'> here <a/></p><hr><p>Area: Kungshamra</p><p>Floor: 01</p><p>Apartment number: 2122</p><p>Book it <a href=\'www.kungshamra1.se\'> here <a/></p><hr>`,
   }
 
   describe('generateContent()', () => {
@@ -74,7 +74,7 @@ describe('mail', () => {
         area: 'Hugin',
         floor: '05',
         adress: '0823-3142-2122',
-        link: 'www.hugin1.se'
+        link: 'www.hugin1.se',
       })
       uniqueAreas = mail.getAllUniqueAreas(cloneAreas)
       uniqueAreas.should.equal('Nyponet, Kungshamra & Hugin')

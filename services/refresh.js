@@ -1,7 +1,7 @@
 const { scrapeApartments } = require('./scrape')
 const { checkIfNewRelease } = require('./analyze')
 
-// The server restarts one every 24h. When this happens the server's prev is
+// The server restarts once every 24h. When this happens the server's prev is
 // empty, and the first scrape is always interpreted as a new release. Count
 // the servers scrapes and ignore that first case when prev is empty.
 // This variable is set to 1 in order to trigger a mailing action on a local
@@ -17,11 +17,11 @@ const updateApartments = () => {
   refreshCounter++
   doEmail = refreshCounter > 1
   const result = scrapeApartments()
-    .then(apartments => {
+    .then((apartments) => {
       savedApartments = checkIfNewRelease(savedApartments, apartments, doEmail)
       return apartments
     })
-    .catch(err => console.error('Error in updateApartments', err))
+    .catch((err) => console.error('Error in updateApartments', err))
   return result
 }
 
@@ -34,10 +34,10 @@ const timedUpdate = () => {
         timedUpdate()
       }, refreshTimer)
     })
-    .catch(err => console.error('Error in timedUpdate', err))
+    .catch((err) => console.error('Error in timedUpdate', err))
 }
 
 module.exports = {
   updateApartments: updateApartments,
-  timedUpdate: timedUpdate
+  timedUpdate: timedUpdate,
 }

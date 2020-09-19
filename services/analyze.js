@@ -1,7 +1,7 @@
 const { arraysOfObjectsAreSame } = require('../utils/utils')
 const { updateApartments } = require('../services/refresh')
 const users = require('./users')
-const log = require('../utils/log')
+const log = require('../utils/log/log')
 
 // The first time updateApartments is called (which in turns calls this function),
 // prev is always empty. Jump out of the loop immediately when this happens.
@@ -107,7 +107,7 @@ const handleNewShortTerms = (shortTermAmount, curr) => {
   users.handleShortTermRelease(shortTerms)
 }
 
-const handleNewFlush = curr => {
+const handleNewFlush = (curr) => {
   log.handleNewFlush()
   users.handleGeneralRelease(curr)
 }
@@ -115,7 +115,7 @@ const handleNewFlush = curr => {
 // Concatenate the list of previous apartments with the new. Check if any
 // object's id matches. In the case that some id's don't match -
 // some short term apartment(s) has been released.
-const amountOfShortTerms = idHitsDict => {
+const amountOfShortTerms = (idHitsDict) => {
   let amountOfShortTerms = 0
   for (let attr in idHitsDict) {
     if (idHitsDict[attr]['hits'] === 1) {
@@ -136,7 +136,7 @@ const countIdHits = (prev, curr) => {
     } else {
       occurances[obj.id] = {
         hits: 1,
-        indexes: [index]
+        indexes: [index],
       }
     }
   })
@@ -161,7 +161,7 @@ const factory = {
   handleNewRelease,
   amountOfShortTerms,
   handleNewShortTerms,
-  handleNewFlush
+  handleNewFlush,
 }
 
 module.exports = {
@@ -170,5 +170,5 @@ module.exports = {
   handlePotentialNewRelease,
   countIdHits,
   handleBatchChange,
-  factory
+  factory,
 }
