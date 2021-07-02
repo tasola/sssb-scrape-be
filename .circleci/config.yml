@@ -29,6 +29,13 @@ jobs:
           paths:
             - ./node_modules
 
+  deploy:
+    executor: heroku/default
+    steps:
+      - checkout
+      - heroku/install
+      - heroku/deploy-via-git
+
 orbs:
   heroku: circleci/heroku@0.0.10
 workflows:
@@ -37,7 +44,7 @@ workflows:
     jobs:
       - build
       - test
-      - heroku/deploy-via-git:
+      - deploy:
           requires:
             - build
             - test
