@@ -1,6 +1,6 @@
 const { decodeEntities } = require('./utils')
 
-const getApartmentType = typeTitle => {
+const getApartmentType = (typeTitle) => {
   typeTitle = decodeEntities(typeTitle)
   if (typeTitle === 'Enkelrum, (rum i korridor)') {
     return 'dorm'
@@ -17,10 +17,10 @@ const getApartmentType = typeTitle => {
   ) {
     return 'apartment'
   } else {
-    return 'odd'
+    return null
   }
 }
 
 module.exports = {
-  getApartmentType
+  getApartmentType,
 }

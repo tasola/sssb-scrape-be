@@ -40,6 +40,11 @@ const arrangeUsersSubscriptions = async (shortTerms) => {
       removeLeadingZeroFromString(floor),
       getApartmentType(type)
     )
+
+    if (!subscriberEmails) {
+      continue
+    }
+
     usersSubscriptions = updateUsersSubscriptions(
       usersSubscriptions,
       subscriberEmails,
@@ -51,6 +56,10 @@ const arrangeUsersSubscriptions = async (shortTerms) => {
 
 // Fetch all subscribers for the given area and floor from the user matcher API
 const getSubscribersFor = async (area, floor, type) => {
+  if (!type) {
+    return null
+  }
+
   const endpoint = `${userMatcherBaseUrl}/users/${area}/${type}/${floor}`
   try {
     const subscriberEmails = await axios.get(endpoint)
