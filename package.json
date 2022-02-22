@@ -27,7 +27,7 @@
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
     "sinon": "^7.5.0",
-    "tar": ">=4.4.2"
+    "tar": ">=6.1.9"
   },
   "devDependencies": {
     "should": "^13.2.3",
